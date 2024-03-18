@@ -1,3 +1,4 @@
+# ![](/data/images/fenzihua.png)
 # ![](/data/images/icon_big.png)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3257167.svg)](https://doi.org/10.5281/zenodo.3257167)
 [![Build Status](https://travis-ci.org/nvpopov/qppcad.svg?branch=master)](https://travis-ci.org/nvpopov/qppcad)
