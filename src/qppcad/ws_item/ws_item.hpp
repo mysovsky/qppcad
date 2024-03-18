@@ -9,6 +9,7 @@
 #include <qppcad/core/qpp_object.hpp>
 #include <qppcad/core/iupdatable.hpp>
 
+#include <QPainterPath>
 #include <QPainter>
 
 namespace qpp {

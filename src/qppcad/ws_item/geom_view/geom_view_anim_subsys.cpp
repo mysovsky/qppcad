@@ -40,20 +40,37 @@ void geom_view_anim_subsys_t::update_geom_to_anim(const int anim_id,
       else if (p_owner->m_geom->DIM > 0) p_owner->m_tws_tr->do_action(act_lock_img);
     }
 
+  //asm
+  /*
   size_t nat = p_owner->m_geom->nat();
   if (m_anim_data[anim_id].frames[start_frame_n].atom_pos.size() != nat ||
       m_anim_data[anim_id].frames[end_frame_n].atom_pos.size() != nat) {
       m_force_non_animable = true;
       return;
     }
+  */
 
-  for (auto i = 0; i < p_owner->m_geom->nat(); i++) { // update atom data
+  size_t nat1 = m_anim_data[anim_id].frames[start_frame_n].atom_pos.size();
+  size_t nat2 = m_anim_data[anim_id].frames[end_frame_n].atom_pos.size();
+  size_t nat = nat1 > nat2 ? nat1 : nat2;
 
-      vector3<float> new_pos =
+  //for (auto i = 0; i < p_owner->m_geom->nat(); i++) { // update atom data
+  for (auto i = 0; i < nat; i++) { // update atom data
+
+    vector3<float> new_pos;
+    if (nat1==nat2)
+      new_pos =
           m_anim_data[anim_id].frames[start_frame_n].atom_pos[i] * (frame_delta) +
           m_anim_data[anim_id].frames[end_frame_n].atom_pos[i] * (1-frame_delta);
+    else if (nat1>nat2)
+      new_pos = m_anim_data[anim_id].frames[start_frame_n].atom_pos[i];
+    else 
+      new_pos = m_anim_data[anim_id].frames[end_frame_n].atom_pos[i];
 
+    if (nat1==nat2)
       p_owner->m_geom->change_pos(i, new_pos);
+    else
+      
 
       if (p_owner->m_color_mode == geom_view_color_e::color_from_xgeom) {
 

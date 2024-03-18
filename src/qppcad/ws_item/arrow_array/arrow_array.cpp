@@ -74,7 +74,9 @@ void arrow_array_t::render() {
       if (dnodem < m_displ_eps) continue;
 
       vector3<float> dir = (end_pos - start_pos).normalized();
-      vector3<float> end = start_pos + dir * m_unf_arrow_len;
+      // ---------------- asm -------------------------------
+      //vector3<float> end = start_pos + dir * m_unf_arrow_len;
+      vector3<float> end = start_pos + dir * m_unf_arrow_len * dnodem * 10.0;
 
       matrix4<float> mat_body = matrix4<float>::Identity();
       mat_body.block<3,1>(0,3) = start_pos;
