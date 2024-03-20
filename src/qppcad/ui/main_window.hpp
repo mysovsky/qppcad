@@ -142,8 +142,15 @@ namespace qpp {
 
         QMenu *ws_menu;
         QAction *ws_menu_rename_ws;
+        // asm
+        QMenu *ws_create_new_item;
+          QAction *ws_create_geometry;
+          QAction *ws_create_symmetry;
+          QAction *ws_create_gprimitive;
+          QAction *ws_create_arrow_array;
         QAction *ws_menu_bg_color;
         QAction *ws_copy_cam;
+
 
         QMenu *view_menu;
         QAction *view_menu_show_oi;
@@ -257,6 +264,9 @@ namespace qpp {
         void action_bhv_import_as_new_workspace();
         void action_bhv_export_selected();
         void control_bhv_menus_activity();
+
+        // asm
+        void action_create_arrow_array();
 
         void make_screenshot();
 

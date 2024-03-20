@@ -6,6 +6,7 @@
 #include <qppcad/ui/toolbar_element.hpp>
 #include <qppcad/ui/ptable_rich_widget.hpp>
 #include <qppcad/ui/toolbar_element.hpp>
+#include <qppcad/ui/create_arrow_array.hpp>
 
 #include <qppcad/ws_item/ws_item_behaviour_manager.hpp>
 #include <qppcad/ws_item/geom_view/geom_view.hpp>
@@ -263,6 +264,41 @@ void main_window_t::init_menus() {
           this,
           &main_window_t::rename_cur_ws);
 
+  // asm
+  ws_create_new_item = ws_menu->addMenu(tr("&Create new..."));
+
+  ws_create_geometry = new QAction(nullptr);
+  ws_create_geometry -> setText(tr("Geometry"));
+  ws_create_new_item -> addAction(ws_create_geometry);  
+  connect(ws_create_geometry,
+          &QAction::triggered,
+          this,
+          &main_window_t::action_select_all_content);
+
+  ws_create_symmetry = new QAction(nullptr);
+  ws_create_symmetry -> setText(tr("Symmetry group"));
+  ws_create_new_item -> addAction(ws_create_symmetry);
+  connect(ws_create_symmetry,
+          &QAction::triggered,
+          this,
+          &main_window_t::action_select_all_content);
+
+  ws_create_gprimitive = new QAction(nullptr);
+  ws_create_gprimitive -> setText(tr("Graphic primitive"));
+  ws_create_new_item -> addAction(ws_create_gprimitive);
+  connect(ws_create_gprimitive,
+          &QAction::triggered,
+          this,
+          &main_window_t::action_select_all_content);
+
+  ws_create_arrow_array = new QAction(nullptr);
+  ws_create_arrow_array -> setText(tr("Arrow array"));
+  ws_create_new_item -> addAction(ws_create_arrow_array);
+  connect(ws_create_arrow_array,
+          &QAction::triggered,
+          this,
+          &main_window_t::action_create_arrow_array);
+  
   ws_menu_bg_color = new QAction(nullptr);
   ws_menu_bg_color->setText(tr("Change background"));
   ws_menu->addAction(ws_menu_bg_color);
@@ -390,10 +426,10 @@ void main_window_t::init_menus() {
   connect(help_menu_about,
           &QAction::triggered,
           []() {
-            QMessageBox::about(nullptr, "qpp::cad",
+            QMessageBox::about(nullptr, "Fenzihua",
                                QObject::tr(
-                                 "Site : <a href='https://github.com/nvpopov/qppcad'>"
-                                 "https://github.com/nvpopov/qppcad"
+                                 "Site : <a href='https://github.com/mysovsky/fenzihua'>"
+                                 "https://github.com/mysovsky/fenzihua.git"
                                  "</a><br>"
                                  "Git rev : %1<br>"
                                  "Build time : %2<br>"
@@ -2018,5 +2054,17 @@ void main_window_t::make_screenshot() {
 void main_window_t::slot_shortcut_terminate_app() {
 
   QApplication::quit();
+  
+}
 
+
+void main_window_t::action_create_arrow_array() {
+
+  app_state_t* astate = app_state_t::get_inst();
+
+  if (!astate->ws_mgr->has_wss()) return;
+  
+  create_arrow_array_widget_t  add_dialog;
+  add_dialog.exec(); 
+  
 }

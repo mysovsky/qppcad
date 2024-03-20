@@ -5,6 +5,9 @@
 using namespace qpp;
 using namespace qpp::cad;
 
+float camera_t::nav_div_step_translation = 13.0;
+float camera_t::nav_div_step_rotation = 13.0;
+
 camera_t::camera_t () {
 
   app_state_t* astate = app_state_t::get_inst();
@@ -157,8 +160,32 @@ void camera_t::update_camera () {
 
   if (m_rotate_camera) {
 
-      float rot_angle_x = y_dt / camera_t::nav_div_step_rotation;
-      float rot_angle_y = x_dt / camera_t::nav_div_step_rotation;
+    float width   = astate->viewport_size(0);
+    float height  = astate->viewport_size(1);
+    float x_scale = 1.0f;
+    float y_scale = 1.0f;
+    if (width > height) x_scale = width / (height );
+    else  y_scale = height / (width );
+
+    float xrot =  x_scale * astate -> mouse_x_dc_old;
+    float yrot =  y_scale * astate -> mouse_y_dc_old;
+    
+    float deltax = x_dt/nav_div_step_rotation;
+    float deltay = y_dt/nav_div_step_rotation;
+    float h = (m_view_point - m_look_at).norm();
+
+    vector3<float> aa = -m_right*h*deltay - m_look_up*h*deltax + m_forward*(xrot*deltay - yrot*deltax);
+
+    float phi = aa.norm()/(xrot*xrot + yrot*yrot + h*h);
+    aa /= aa.norm();
+    
+    rotate_camera_around_axis(phi,aa);
+    astate->make_viewport_dirty();    
+    
+    /* --------- asm was here! -----------
+
+    float rot_angle_x = y_dt / camera_t::nav_div_step_rotation;
+    float rot_angle_y = x_dt / camera_t::nav_div_step_rotation;
 
       if (fabs(rot_angle_y) > camera_t::nav_thresh && !m_rotate_over) {
           rotate_camera_orbit_yaw(rot_angle_y);
@@ -175,7 +202,8 @@ void camera_t::update_camera () {
           rotate_camera_orbit_roll(med_rot);
           astate->make_viewport_dirty();
         }
-
+    */
+    
     }
 
   if (m_cur_proj == cam_proj_t::proj_persp) {
@@ -226,7 +254,7 @@ void camera_t::update_camera_zoom (const float dist) {
       float f_dist = m_view_dir_n.norm();
       m_stored_dist = f_dist;
       m_view_dir_n.normalize();
-      float f_dist_delta = dist * m_mouse_whell_camera_step;
+      float f_dist_delta = dist * m_mouse_wheel_camera_step;
       //bool bCanZoom = true;
       if (f_dist + f_dist_delta > m_mouse_zoom_min_distance || f_dist_delta < 0.0f)
         m_view_point += m_view_dir_n * f_dist_delta;

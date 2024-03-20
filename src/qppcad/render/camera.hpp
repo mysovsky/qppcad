@@ -21,9 +21,9 @@ namespace qpp {
 
         static constexpr float norm_eps = 0.00001f;
         static constexpr float nav_thresh = 0.00001f;
-        static constexpr int   nav_div_step_translation = 13;
-        static constexpr int   nav_div_step_rotation = 43;
-
+        static  float nav_div_step_translation;
+        static  float nav_div_step_rotation;
+      
         vector3<float> m_view_point;
         vector3<float> m_view_dir;
         vector3<float> m_look_at;
@@ -42,7 +42,7 @@ namespace qpp {
         bool m_move_camera{false};
         bool m_rotate_over{false};
 
-        float m_mouse_whell_camera_step{2.0f};
+        float m_mouse_wheel_camera_step{2.0f};
         float m_mouse_zoom_min_distance{4.0f};
 
         float m_ortho_scale{10.0f};
