@@ -37,16 +37,20 @@ arrow_array_obj_insp_widget_t::arrow_array_obj_insp_widget_t() {
   aa_arrow_color = new qbinded_color3_input_t;
 
   aa_affected_by_sv = new qbinded_checkbox_t;
-
+  aa_is_visible = new qbinded_checkbox_t;
+ 
+  gb_aa_settings_lt->addRow(tr("Is visible"), aa_is_visible);
   gb_aa_settings_lt->addRow(tr("Source"), aa_settings_src);
   gb_aa_settings_lt->addRow(tr("Displ. eps."), aa_displ_eps);
-  gb_aa_settings_lt->addRow(tr("Arrow length"), aa_unf_arrow_len);
-  gb_aa_settings_lt->addRow(tr("Arrow scale"), aa_unf_arrow_scale);
+  gb_aa_settings_lt->addRow(tr("Arrow scale"), aa_unf_arrow_len);
+  gb_aa_settings_lt->addRow(tr("Arrow width"), aa_unf_arrow_scale);
   gb_aa_settings_lt->addRow(tr("Cap length"), aa_unf_arrow_cap_len);
-  gb_aa_settings_lt->addRow(tr("Cap scale"), aa_unf_arrow_cap_scale);
+  gb_aa_settings_lt->addRow(tr("Cap width"), aa_unf_arrow_cap_scale);
   gb_aa_settings_lt->addRow(tr("Arrow color"), aa_arrow_color);
   gb_aa_settings_lt->addRow(tr("Affected by sel. vis."), aa_affected_by_sv);
 
+  aa_settings_src -> setEnabled(false);
+  
   init_form_lt(gb_aa_settings_lt);
 
   tab_general->tab_inner_widget_lt->addWidget(gb_aa_settings);
@@ -58,7 +62,7 @@ void arrow_array_obj_insp_widget_t::bind_to_item(ws_item_t *_binding_item) {
 
   ws_item_obj_insp_widget_t::bind_to_item(_binding_item);
 
-  if (auto _as_aa = _binding_item->cast_as<arrow_array_t>(); _as_aa != nullptr) {
+  if (auto _as_aa = _binding_item->cast_as<arrow_array_view_t>(); _as_aa != nullptr) {
 
       b_aa = _as_aa;
       aa_settings_src->bind_value(&b_aa->m_src, _as_aa, _as_aa->m_parent_ws);
@@ -69,6 +73,7 @@ void arrow_array_obj_insp_widget_t::bind_to_item(ws_item_t *_binding_item) {
       aa_unf_arrow_cap_scale->bind_value(&b_aa->m_unf_arrow_cap_scale);
       aa_arrow_color->bind_value(&b_aa->m_color);
       aa_affected_by_sv->bind_value(&b_aa->m_affected_by_sv);
+      aa_is_visible->bind_value(&b_aa->m_is_visible);
 
     }
 
@@ -90,5 +95,6 @@ void arrow_array_obj_insp_widget_t::unbind_item() {
   aa_unf_arrow_cap_scale->unbind_value();
   aa_arrow_color->unbind_value();
   aa_affected_by_sv->unbind_value();
+  aa_is_visible->unbind_value();
 
 }

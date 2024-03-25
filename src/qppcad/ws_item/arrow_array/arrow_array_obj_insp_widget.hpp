@@ -14,7 +14,7 @@ namespace qpp {
 
       public:
 
-        arrow_array_t *b_aa{nullptr};
+        arrow_array_view_t *b_aa{nullptr};
 
         qspoiler_widget_t *gb_aa_settings;
         QFormLayout *gb_aa_settings_lt;
@@ -26,7 +26,8 @@ namespace qpp {
         qbinded_float_spinbox_t *aa_displ_eps;
         qbinded_color3_input_t *aa_arrow_color;
         qbinded_checkbox_t *aa_affected_by_sv;
-
+        qbinded_checkbox_t *aa_is_visible;
+      
         arrow_array_obj_insp_widget_t();
 
         void bind_to_item(ws_item_t *_binding_item) override;

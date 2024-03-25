@@ -7,31 +7,47 @@
 using namespace qpp;
 using namespace qpp::cad;
 
-arrow_array_t::arrow_array_t() {
+arrow_array_view_t::arrow_array_view_t() {
   set_default_flags(ws_item_flags_default | ws_item_flags_support_rendering);
 }
 
-void arrow_array_t::vote_for_view_vectors(vector3<float> &out_look_pos,
+void arrow_array_view_t::vote_for_view_vectors(vector3<float> &out_look_pos,
                                           vector3<float> &out_look_at) {
   //do nothing
 }
 
-void arrow_array_t::render() {
+void arrow_array_view_t::create_zero_vectors()
+{
+  if (!m_binded_gv) return;  
+  if (!m_binded_gv -> m_geom) return;  
+  m_binded_vectors = std::make_shared<geom_atom_vectors<float> >(&(*m_binded_gv -> m_geom));
+}
 
-  app_state_t* astate = app_state_t::get_inst();
-
-  ws_item_t::render();
-
-  if (!m_is_visible) return;
-  if (!m_binded_gv) return;
+//------------------------------------
+void arrow_array_view_t::create_vectors_from_frames(int f1, int f2)
+{
+  //  if (!m_is_visible) return;
+  if (!m_binded_gv) return;  
+  if (!m_binded_gv -> m_geom) return;  
+  
+  auto geom = m_binded_gv -> m_geom;
+  // Create zero vectors
+  m_binded_vectors = std::make_shared<geom_atom_vectors<float> >(&(*geom));
+   
   if (!m_binded_gv->m_anim->animable()) return;
-
+     
   auto cur_anim = m_binded_gv->m_anim->get_current_anim();
 
-  if (cur_anim && m_binded_gv->m_anim->get_current_anim()->m_anim_type == geom_anim_t::anim_static)
+  if (cur_anim && cur_anim->m_anim_type == geom_anim_t::anim_static)
     return;
+  if (cur_anim->frames.size() <= f1 || cur_anim->frames.size() <= f2) return;
 
-  if (cur_anim->frames.size() == 0) return;
+  for (size_t i = 0; i < geom -> nat(); i++) {
+    
+    m_binded_vectors -> vectors[i] = cur_anim -> frames[f2].atom_pos[i] - cur_anim -> frames[f1].atom_pos[i];
+  }
+
+  /* WTF is all this? I can't understand - asm
 
   int total_frames    = cur_anim->frames.size();
   float start_frame_0 = int(m_binded_gv->m_anim->m_cur_anim_time);
@@ -56,12 +72,9 @@ void arrow_array_t::render() {
 //  astate->log(fmt::format("ENTER AA RENDERING s0={} e0={} d0={} s1={} e1={} d1={}",
 //                          start_frame_0, end_frame_0, frame_delta_0,
 //                          start_frame_1, end_frame_1, frame_delta_1));
+*/
 
-  astate->dp->begin_render_general_mesh();
-  for (size_t i = 0; i < m_binded_gv->m_geom->nat(); i++) {
-
-      if (m_affected_by_sv && m_binded_gv->m_geom->xfield<bool>(xgeom_sel_vis_hide, i)) continue;
-
+      /*
       vector3<float> start_pos = cur_anim->frames[start_frame_n_0].atom_pos[i] * (frame_delta_0) +
                                  cur_anim->frames[end_frame_n_0].atom_pos[i] * (1-frame_delta_0) +
                                  m_binded_gv->m_pos;
@@ -77,7 +90,34 @@ void arrow_array_t::render() {
       // ---------------- asm -------------------------------
       //vector3<float> end = start_pos + dir * m_unf_arrow_len;
       vector3<float> end = start_pos + dir * m_unf_arrow_len * dnodem * 10.0;
+      
+  }*/
+  
+}
 
+void arrow_array_view_t::create_vectors_from_fields(int f1, int f2, int f3){
+}
+
+
+void arrow_array_view_t::render() {
+
+  app_state_t* astate = app_state_t::get_inst();
+
+  if (!m_is_visible) return;
+
+  ws_item_t::render();
+
+      
+  //-------------------------------------------
+  astate->dp->begin_render_general_mesh();
+  for (size_t i = 0; i < m_binded_gv->m_geom->nat(); i++) {
+
+    if (m_affected_by_sv && m_binded_gv->m_geom->xfield<bool>(xgeom_sel_vis_hide, i)) continue;
+    
+      vector3<float> start_pos = m_binded_vectors->start_pos(i);
+      vector3<float> end = m_binded_vectors->end_pos(i,m_unf_arrow_len );
+      vector3<float> dir = (end - start_pos).normalized();
+ 
       matrix4<float> mat_body = matrix4<float>::Identity();
       mat_body.block<3,1>(0,3) = start_pos;
       mat_body.block<3,1>(0,2) = end - start_pos;
@@ -108,31 +148,31 @@ void arrow_array_t::render() {
 
 }
 
-bool arrow_array_t::mouse_click(ray_t<float> *click_ray) {
+bool arrow_array_view_t::mouse_click(ray_t<float> *click_ray) {
   return false;
 }
 
-std::string arrow_array_t::compose_type_descr() {
+std::string arrow_array_view_t::compose_type_descr() {
   return "arrow_array";
 }
 
-void arrow_array_t::update(float delta_time) {
+void arrow_array_view_t::update(float delta_time) {
   //do nothing
 }
 
-float arrow_array_t::get_bb_prescaller() {
+float arrow_array_view_t::get_bb_prescaller() {
   return 1.0f;
 }
 
-uint32_t arrow_array_t::get_num_cnt_selected() {
+uint32_t arrow_array_view_t::get_num_cnt_selected() {
   return 0;
 }
 
-size_t arrow_array_t::get_content_count() {
+size_t arrow_array_view_t::get_content_count() {
   return 0;
 }
 
-void arrow_array_t::save_to_json(json &data) {
+void arrow_array_view_t::save_to_json(json &data) {
 
   ws_item_t::save_to_json(data);
 
@@ -146,7 +186,7 @@ void arrow_array_t::save_to_json(json &data) {
 
 }
 
-void arrow_array_t::load_from_json(json &data, repair_connection_info_t &rep_info) {
+void arrow_array_view_t::load_from_json(json &data, repair_connection_info_t &rep_info) {
 
   ws_item_t::load_from_json(data, rep_info);
   load_ws_item_field(JSON_AARRAY_SRD, &m_src, data, rep_info);
@@ -159,11 +199,11 @@ void arrow_array_t::load_from_json(json &data, repair_connection_info_t &rep_inf
 
 }
 
-bool arrow_array_t::can_be_written_to_json() {
+bool arrow_array_view_t::can_be_written_to_json() {
   return true;
 }
 
-void arrow_array_t::updated_externally(uint32_t update_reason) {
+void arrow_array_view_t::updated_externally(uint32_t update_reason) {
 
   ws_item_t::updated_externally(update_reason);
 

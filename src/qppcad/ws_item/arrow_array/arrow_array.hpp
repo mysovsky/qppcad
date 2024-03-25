@@ -2,21 +2,72 @@
 #define QPPCAD_ARROW_ARRAY
 #include <qppcad/core/qppcad.hpp>
 #include <data/color.hpp>
+#include <geom/geom.hpp>
 #include <qppcad/ws_item/ws_item.hpp>
 
 namespace qpp {
 
+  // ---   asm ------
+  // Move this to qpp !!!
+
+  template <class REAL>
+  class geom_atom_vectors {
+  public:
+
+    geometry<REAL,periodic_cell<REAL> > * binded_geom;
+    std::vector<vector3<REAL> > vectors;
+
+    geom_atom_vectors(geometry<REAL,periodic_cell<REAL> > * __binded_geom = nullptr){
+      binded_geom = __binded_geom;
+      if (binded_geom){
+	vectors.resize(binded_geom -> nat());
+	std::fill(vectors.begin(), vectors.end(), vector3<REAL>(0e0));
+      }
+    }
+
+    geom_atom_vectors(const std::vector<vector3<REAL> > & __vectors,
+		      geometry<REAL,periodic_cell<REAL> > * __binded_geom) :
+      vectors(__vectors), binded_geom(__binded_geom) {}
+
+    bool is_valid() const{
+      if (binded_geom)
+	if (vectors.size() == binded_geom->nat() )
+	  return true;
+      return false;
+    }
+
+    vector3<REAL> start_pos(int i) const{
+      return binded_geom->pos(i);
+    }
+
+    vector3<REAL> end_pos(int i, REAL scale = 1e0) const{
+      return binded_geom->pos(i) + scale*vectors[i];
+    }
+    
+    vector3<REAL> start_pos(int i, const index &I) const{
+      return binded_geom->pos(i,I);
+    }
+
+    vector3<REAL> end_pos(int i, const index &I, REAL scale = 1e0) const{
+      return binded_geom->pos(i,I) + scale*vectors[i];
+    }
+    
+  };
+
+  
   namespace cad {
 
     class geom_view_t;
 
-    class arrow_array_t final: public ws_item_t {
+    class arrow_array_view_t final: public ws_item_t {
 
-        QPP_OBJECT(arrow_array_t, ws_item_t)
+        QPP_OBJECT(arrow_array_view_t, ws_item_t)
 
       public:
 
         geom_view_t *m_binded_gv{nullptr};
+        std::shared_ptr<geom_atom_vectors<float> > m_binded_vectors{nullptr};
+      
         std::shared_ptr<ws_item_t> m_src{nullptr};
 
         float m_unf_arrow_len{1.0f};
@@ -29,10 +80,15 @@ namespace qpp {
         bool m_affected_by_sv{false};
         vector3<float> m_color{clr_red};
 
-        arrow_array_t();
+        arrow_array_view_t();
 
         void vote_for_view_vectors(vector3<float> &out_look_pos,
                                    vector3<float> &out_look_at) override ;
+
+        void create_zero_vectors();
+        void create_vectors_from_frames(int f1, int f2);
+        void create_vectors_from_fields(int f1, int f2, int f3);
+      
         void render() override;
         bool mouse_click(ray_t<float> *click_ray) override;
 

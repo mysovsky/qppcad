@@ -333,6 +333,11 @@ void geom_view_obj_insp_widget_t::construct_anim_tab() {
 
   app_state_t *astate = app_state_t::get_inst();
 
+  // asm
+  if (b_al && b_al-> m_anim &&
+      b_al-> m_anim -> get_total_anims() > 1)
+    b_al-> m_anim -> m_cur_anim = 1;
+  
   gb_anim_summary = new qspoiler_widget_t(tr("Summary"));
   gb_anim_summary_lt = new QFormLayout;
   gb_anim_summary->add_content_layout(gb_anim_summary_lt);
@@ -371,6 +376,7 @@ void geom_view_obj_insp_widget_t::construct_anim_tab() {
   anim_act_lt->addWidget(anim_act_ren);
   anim_act_lt->addWidget(anim_act_del);
 
+  
   gb_anim_summary_lt->addRow(tr("Num. of anim."), gb_anim_total_anims);
   gb_anim_summary_lt->addRow(tr("Rebuild bonds"), gb_rebuild_bonds);
   gb_anim_summary_lt->addRow(tr("Play in cycle"), gb_play_cyclic);

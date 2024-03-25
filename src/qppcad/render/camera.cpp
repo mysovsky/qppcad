@@ -6,7 +6,7 @@ using namespace qpp;
 using namespace qpp::cad;
 
 float camera_t::nav_div_step_translation = 13.0;
-float camera_t::nav_div_step_rotation = 13.0;
+float camera_t::nav_div_step_rotation = 10.0;
 
 camera_t::camera_t () {
 

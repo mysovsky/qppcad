@@ -489,8 +489,8 @@ void add_new_ws_item_widget_t::ok_button_clicked() {
           auto cur_ws = astate->ws_mgr->get_cur_ws();
           if (!cur_ws) return;
           auto nt =
-              astate->ws_mgr->m_bhv_mgr->fbr_ws_item_by_type(arrow_array_t::get_type_static());
-          auto aa_ap = nt->cast_as<arrow_array_t>();
+              astate->ws_mgr->m_bhv_mgr->fbr_ws_item_by_type(arrow_array_view_t::get_type_static());
+          auto aa_ap = nt->cast_as<arrow_array_view_t>();
           if (!aa_ap) return;
           aa_ap->m_name = type_param_name->text().toStdString();
           cur_ws->add_item_to_ws(nt);
