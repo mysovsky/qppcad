@@ -5,6 +5,7 @@
 #include <qppcad/ws_item/geom_view/geom_view.hpp>
 #include <qppcad/ui/qrealspinbox_delegate.hpp>
 #include <qppcad/ui/qspoiler_widget.hpp>
+//#include <qppcad/ws_item/geom_view/qtype_summary_model.hpp>
 
 #include <QTableWidget>
 #include <QTableView>
@@ -37,6 +38,7 @@ namespace qpp {
         qspoiler_widget_t *tg_type_summary_widget;
         QVBoxLayout *tg_type_summary_lt;
         QTableWidget *tg_type_summary_tbl;
+      //QTableView *tg_type_summary_tbl1;
         QPushButton *type_summary_clear_tclr_override;
 
         qspoiler_widget_t *tg_gb_cell;
@@ -107,6 +109,8 @@ namespace qpp {
         qbonding_table_model_t *bt_mdl;
         qrealspinbox_delegate_t *bt_dist_delegate;
         //END: Display tab
+        //asm
+        //qtype_summary_model_t *ts_mdl;
 
         ws_item_tab_widget_t *tab_anim;
         qspoiler_widget_t *gb_anim_summary;
@@ -376,8 +380,32 @@ namespace qpp {
         void rebond_button_clicked();
         void clear_color_override_button_clicked();
 
+        //asm
+        void atomic_radius_modified(int i, int j, double d);
+
     };
 
+    class qrealspinidx : public QDoubleSpinBox{
+
+      Q_OBJECT
+  
+    public:
+      int i{0},j{0};
+  
+      qrealspinidx(int _i, int _j, QWidget *parent = nullptr);
+
+      void bind(int _i, int _j);
+
+    signals:
+		  
+      void valueChanged_ij(int __i, int __j, double d);
+
+    public slots:
+
+      void valueChangedEmit(double d);
+  
+    };
+    
   } // namespace qpp::cad
 
 } // namespace qpp

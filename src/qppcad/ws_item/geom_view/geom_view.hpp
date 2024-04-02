@@ -139,6 +139,7 @@ namespace qpp {
         std::unordered_set<size_t> m_atom_type_to_hide;
         std::unordered_set<size_t> m_atom_type_to_hide_bond;
         std::unordered_map<size_t, vector3<float> > m_type_color_override;
+        std::unordered_map<size_t, float > m_type_radius_override;
 
         float m_shading_specular_power{12.0f};
         float m_atom_scale_factor{0.3f};

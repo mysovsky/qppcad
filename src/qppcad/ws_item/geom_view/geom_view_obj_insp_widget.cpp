@@ -7,6 +7,7 @@
 #include <qppcad/ws_item/geom_view/geom_view_tools.hpp>
 
 #include <qppcad/ws_item/geom_view/qbonding_table_model.hpp>
+#include <qppcad/ws_item/geom_view/qtype_summary_model.hpp>
 #include <qppcad/ws_item/geom_view/qtype_specific_rendering_model.hpp>
 #include <qppcad/ws_item/geom_view/qmeasurements_table_model.hpp>
 #include <qppcad/ws_item/geom_view/xgeom_fields_model.hpp>
@@ -40,7 +41,7 @@ void geom_view_obj_insp_widget_t::construct_general_tab() {
   tg_type_summary_widget->add_content_layout(tg_type_summary_lt);
   tg_type_summary_tbl = new QTableWidget;
   tg_type_summary_tbl->setFixedWidth(astate->size_guide.obj_insp_table_w());
-  tg_type_summary_tbl->setColumnCount(3);
+  tg_type_summary_tbl->setColumnCount(4);
 
   type_summary_clear_tclr_override = new QPushButton;
   type_summary_clear_tclr_override->setFixedSize(QSize(astate->size_guide.ext_editor_btn_h(),
@@ -56,6 +57,31 @@ void geom_view_obj_insp_widget_t::construct_general_tab() {
 
   tg_type_summary_widget->hbox_frm->insertWidget(3, type_summary_clear_tclr_override);
 
+  // --------- asm -----------------
+
+  /*
+  auto tg_type_summary_widget1 = new qspoiler_widget_t(tr("Type Summary1"),
+						       this, true, 0, 360, false, 0);
+  auto tg_type_summary_lt1 = new QVBoxLayout;
+  tg_type_summary_widget1 -> add_content_layout(tg_type_summary_lt1);
+  auto tg_type_summary_tbl1 = new QTableView;
+  tg_type_summary_lt1->addWidget(tg_type_summary_tbl1);
+  auto ts_mdl = new qtype_summary_model_t;
+
+  tg_type_summary_tbl1 -> setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
+  //tg_type_summary_tbl1 -> verticalHeader()->hide();
+  tg_type_summary_tbl1 -> setSelectionMode(QAbstractItemView::SelectionMode::NoSelection);
+  tg_type_summary_tbl1 -> setFocusPolicy(Qt::NoFocus);
+  tg_type_summary_tbl1 -> horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+  tg_type_summary_tbl1 -> setFixedWidth(astate->size_guide.obj_insp_table_w());
+  //tg_type_summary_tbl1 -> setShowGrid(false);
+  tg_type_summary_tbl1 -> setModel(ts_mdl);
+  tg_type_summary_tbl1 -> setLocale(QLocale::C);
+  auto ts_rad_delegate = new qrealspinbox_delegate_t;
+  ts_rad_delegate->set_min_max_step(0.1, 5.0, 0.01);
+  tg_type_summary_tbl1->setItemDelegateForColumn(2, ts_rad_delegate);
+  */
+  
   QStringList table_hdr_cell;
   table_hdr_cell.push_back("X");
   table_hdr_cell.push_back("Y");
@@ -80,6 +106,7 @@ void geom_view_obj_insp_widget_t::construct_general_tab() {
   QStringList table_hdr;
   table_hdr.push_back("Name");
   table_hdr.push_back("Count");
+  table_hdr.push_back("Radius");
   table_hdr.push_back("Color");
 
   tg_type_summary_tbl->setHorizontalHeaderLabels(table_hdr);
@@ -95,9 +122,10 @@ void geom_view_obj_insp_widget_t::construct_general_tab() {
           &QTableView::clicked,
           this,
           &geom_view_obj_insp_widget_t::type_summary_clicked);
-
+  
   tab_general->tab_inner_widget_lt->addWidget(tg_geom_summary_widget);
   tab_general->tab_inner_widget_lt->addWidget(tg_type_summary_widget);
+  //  tab_general->tab_inner_widget_lt->addWidget(tg_type_summary_widget1);
   tab_general->tab_inner_widget_lt->addWidget(tg_gb_cell);
 
   tab_general->tab_inner_widget_lt->addStretch();
@@ -1060,6 +1088,27 @@ void geom_view_obj_insp_widget_t::bind_to_item(ws_item_t *_binding_item) {
 
 }
 
+qrealspinidx::qrealspinidx(int _i, int _j, QWidget *parent): QDoubleSpinBox(parent)
+{i=_i; j=_j;}
+
+//void qrealspinidx::valueChanged_ij(int __i, int __j, double d){}
+
+void qrealspinidx::valueChangedEmit(double d)
+{
+  app_state_t *astate = app_state_t::get_inst();
+  astate -> log(fmt::format("Value Changed Emit {} {} {}\n",i,j,d));
+  valueChanged_ij(i,j,d);
+}
+  
+void qrealspinidx::bind(int _i, int _j)
+{
+  i=_i; j=_j;
+  QObject::connect(this,
+		   static_cast<void(qrealspinidx::*)(double)>(&qrealspinidx::valueChanged),
+		   this,  & qrealspinidx::valueChangedEmit );
+}
+
+
 void geom_view_obj_insp_widget_t::update_from_ws_item() {
 
   ws_item_obj_insp_widget_t::update_from_ws_item();
@@ -1092,7 +1141,7 @@ void geom_view_obj_insp_widget_t::update_from_ws_item() {
           QTableWidgetItem *n_clr = new QTableWidgetItem(n_clr_str);
           n_clr->setTextAlignment(Qt::AlignCenter);
 
-          auto ap_idx = ptable::number_by_symbol(b_al->m_geom->atom_of_type(i));
+          auto ap_idx = ptable::number_by_symbol(atomic_name_to_symbol(b_al->m_geom->atom_of_type(i)));
           vector3<float> bc(0.0, 0.0, 1.0);
           if (ap_idx) {bc = ptable::get_inst()->arecs[*ap_idx-1].m_color_jmol;}
 
@@ -1104,10 +1153,61 @@ void geom_view_obj_insp_widget_t::update_from_ws_item() {
           else color_bck.setRgbF(bc[0], bc[1], bc[2]);
 
           n_clr->setBackgroundColor(color_bck);
-          tg_type_summary_tbl->setItem(i, 2, n_clr);
+          tg_type_summary_tbl->setItem(i, 3, n_clr);
 
+	  // asm
+	  
+	  float pre_rad = 0.4f;
+
+	  if (ap_idx)
+	    pre_rad = ptable::get_inst()->arecs[*ap_idx - 1].m_radius;
+
+	  auto itr = b_al->m_type_radius_override.find(i);
+          if (itr != b_al->m_type_radius_override.end())
+            pre_rad = itr -> second;
+
+	  
+	  //if (b_al->m_geom->xfield<bool>(xgeom_override, at_num)) 
+	  // pre_rad = b_al->m_geom->xfield<float>(xgeom_atom_r, at_num);
+
+	  
+	  QString n_rad_str = tr("%1").arg(pre_rad);
+	  QTableWidgetItem *n_rad_bk = new QTableWidgetItem(n_rad_str);
+	  n_rad_bk -> setTextAlignment(Qt::AlignCenter);
+	  n_rad_bk -> setFlags(n_rad_bk -> flags() | Qt::ItemIsEditable);
+	  
+	  tg_type_summary_tbl->setItem(i, 2, n_rad_bk);
+
+	  
+	  auto n_rad = new qrealspinidx(2,i, tg_type_summary_tbl );
+	  //connect(n_rad, SIGNAL( valueChanged()),
+	  //	  n_rad, SLOT( valueChangedEmit()) );
+	  n_rad -> bind(2,i);
+	  //auto n_rad = new QDoubleSpinBox( tg_type_summary_tbl );
+	  n_rad -> setSingleStep(0.01);
+	  n_rad -> setMinimum(0.0);
+	  n_rad -> setMaximum(10.0);
+	  n_rad -> setValue(pre_rad);
+	  n_rad -> setLocale(QLocale::C);
+	  n_rad -> setAlignment(Qt::AlignCenter);
+	  n_rad -> setButtonSymbols(QAbstractSpinBox::NoButtons);
+	  n_rad -> setVisible(false);
+
+	  QObject::connect(n_rad,
+			   static_cast<void(qrealspinidx::*)(int,int,double)>(& qrealspinidx::valueChanged_ij),
+			   //static_cast<void(qrealspinidx::*)(double)>(&qrealspinidx::valueChanged),
+			   this,  & geom_view_obj_insp_widget_t::atomic_radius_modified );
+	  
+	  tg_type_summary_tbl->setCellWidget ( i, 2, n_rad );
+	  
         }
 
+      /*
+      auto n_radel = new qrealspinbox_delegate_t;
+      n_radel -> set_min_max_step(0.0, 10.0, 0.01);
+      tg_type_summary_tbl -> setItemDelegateForColumn(2, n_radel);
+      */
+      
       //resize type table view
       qt_hlp::vrt_resize_tv_to_cnt(tg_type_summary_tbl);
 
@@ -1189,6 +1289,22 @@ void geom_view_obj_insp_widget_t::update_from_ws_item() {
       disp_type_spec_tv->update();
       qt_hlp::vrt_resize_tv_to_cnt(disp_type_spec_tv);
 
+      /*
+      app_state_t *astate = app_state_t::get_inst();
+      astate -> log("ts_tbl unbind");
+      //tg_type_summary_tbl1 -> setVisible(false);
+      //tg_type_summary_tbl1 -> setModel(nullptr);
+      astate -> log("ts_mdl bind");
+      ts_mdl -> bind(b_al);
+
+
+      //astate -> log(fmt::format("ts table {} {} \n", ts_mdl->rowCount(QModelIndex(0,0,nullptr,nullptr)), ts_mdl->columnCount(QModelIndex(0,0,nullptr,nullptr))));
+      astate -> log("ts_tbl bind");
+      //tg_type_summary_tbl1 -> setModel(ts_mdl);
+       astate -> log("ts_tbl update");
+      tg_type_summary_tbl1 -> update();
+      */
+      
       disp_bt->setModel(nullptr);
       bt_mdl->bind(b_al);
       disp_bt->setModel(bt_mdl);
@@ -1266,6 +1382,8 @@ void geom_view_obj_insp_widget_t::unbind_item() {
 
   disp_type_spec_mdl->unbind();
   bt_mdl->unbind();
+
+  //ts_mdl -> unbind();
 
   unbind_dist_measure_tab();
   unbind_select_tab();
@@ -2496,10 +2614,10 @@ void geom_view_obj_insp_widget_t::type_summary_clicked(const QModelIndex &index)
   int col_idx = index.column();
 
   //type is valid
-  if (atom_type_idx < b_al->m_geom->n_types() && col_idx == 2) {
+  if (atom_type_idx < b_al->m_geom->n_types() && col_idx == 3) {
 
       auto it = b_al->m_type_color_override.find(atom_type_idx);
-      auto ap_idx = ptable::number_by_symbol(b_al->m_geom->atom_of_type(atom_type_idx));
+      auto ap_idx = ptable::number_by_symbol(atomic_name_to_symbol(b_al->m_geom->atom_of_type(atom_type_idx)));
 
       QColor _stored_color = Qt::black;
 
@@ -2527,6 +2645,10 @@ void geom_view_obj_insp_widget_t::type_summary_clicked(const QModelIndex &index)
         }
 
     }
+  else if (atom_type_idx < b_al->m_geom->n_types() && col_idx == 2) {
+    auto dsb = (QDoubleSpinBox*)(tg_type_summary_tbl -> item(col_idx,atom_type_idx));
+    astate -> log(fmt::format("radius clicked {} {} {}",col_idx,atom_type_idx, dsb->value()));
+  }
 
 }
 
@@ -2547,3 +2669,19 @@ void geom_view_obj_insp_widget_t::clear_color_override_button_clicked() {
 
 }
 
+void geom_view_obj_insp_widget_t::atomic_radius_modified(int i, int j, double d) {
+  app_state_t *astate = app_state_t::get_inst();
+  astate -> log(fmt::format("Atomic radius modified  {} {}\n",j,d));
+
+  if (!b_al) return;
+
+  if (j < b_al->m_geom->n_types())
+    {
+      auto it = b_al->m_type_radius_override.find(j);
+      if (it != b_al->m_type_radius_override.end()) b_al->m_type_radius_override.erase(it);
+      auto new_r = std::make_pair(size_t(j), float(d));
+      b_al->m_type_radius_override.insert(new_r);
+      update_from_ws_item();
+      astate->make_viewport_dirty();     
+    }
+}

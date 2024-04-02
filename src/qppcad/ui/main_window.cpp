@@ -329,7 +329,7 @@ void main_window_t::init_menus() {
           &main_window_t::show_obj_insp_state_changed);
 
   view_menu_show_gizmo = new QAction(nullptr);
-  view_menu_show_gizmo->setText(tr("Show gizmo"));
+  view_menu_show_gizmo->setText(tr("Show axes"));
   view_menu_show_gizmo->setCheckable(true);
   view_menu->addAction(view_menu_show_gizmo);
   connect(view_menu_show_gizmo,
@@ -348,15 +348,16 @@ void main_window_t::init_menus() {
           &main_window_t::toggle_fullscreen);
 
   view_menu_settings = new QAction(nullptr);
-  view_menu_settings->setEnabled(false);
+  view_menu_settings->setEnabled(true);
   view_menu_settings->setText(tr("Settings"));
   connect(view_menu_settings,
           &QAction::triggered,[](){app_settings_widget_t aset;aset.exec();});
 
   view_menu_ws_settings = new QAction(nullptr);
-  view_menu_ws_settings->setEnabled(false);
+  view_menu_ws_settings->setEnabled(true);
   view_menu_ws_settings->setText(tr("Workspace settings"));
-  view_menu->addAction(view_menu_settings);
+  // asm
+  edit_menu->addAction(view_menu_settings);
   view_menu->addAction(view_menu_ws_settings);
 
   view_menu_log_wdgt = new QAction(nullptr);

@@ -164,7 +164,7 @@ void geom_view_render_bs::render_atom (geom_view_t &al,
 
   app_state_t* astate = app_state_t::get_inst();
 
-  auto ap_idx = ptable::number_by_symbol(al.m_geom->atom(at_num));
+  auto ap_idx = ptable::number_by_symbol(atomic_name_to_symbol(al.m_geom->atom(at_num)));
   float dr_rad = 0.4f;
   float pre_rad = 0.4f;
   vector3<float> color(0.0, 0.0, 1.0);
@@ -181,6 +181,11 @@ void geom_view_render_bs::render_atom (geom_view_t &al,
   if (!al.m_type_color_override.empty()) {
       auto it = al.m_type_color_override.find(al.m_geom->type_table(at_num));
       if (it != al.m_type_color_override.end()) color = it->second;
+    }
+  
+  if (!al.m_type_radius_override.empty()) {
+      auto it = al.m_type_radius_override.find(al.m_geom->type_table(at_num));
+      if (it != al.m_type_radius_override.end()) pre_rad = it->second;
     }
 
   dr_rad = pre_rad * al.m_atom_scale_factor;
@@ -211,7 +216,7 @@ void geom_view_render_bs::render_atom_suprematic(geom_view_t &al,
 
   app_state_t* astate = app_state_t::get_inst();
 
-  auto ap_idx = ptable::number_by_symbol(al.m_geom->atom(at_num));
+  auto ap_idx = ptable::number_by_symbol(atomic_name_to_symbol((al.m_geom->atom(at_num))));
   float dr_rad = 0.4f;
   float pre_rad = 0.4f;
   vector3<float> color(0.0, 0.0, 0.0);
@@ -229,6 +234,11 @@ void geom_view_render_bs::render_atom_suprematic(geom_view_t &al,
       auto it = al.m_type_color_override.find(al.m_geom->type_table(at_num));
       if (it != al.m_type_color_override.end())
         color = it->second;
+    }
+
+  if (!al.m_type_radius_override.empty()) {
+      auto it = al.m_type_radius_override.find(al.m_geom->type_table(at_num));
+      if (it != al.m_type_radius_override.end()) pre_rad = it->second;
     }
 
   dr_rad = pre_rad * al.m_atom_scale_factor;
@@ -269,13 +279,13 @@ void geom_view_render_bs::render_bond (geom_view_t &al,
       al.m_atom_type_to_hide_bond.find(al.m_geom->type_table(at_num2)) !=
       al.m_atom_type_to_hide_bond.end()) return;
 
-  auto ap_idx1 = ptable::number_by_symbol(al.m_geom->atom(at_num1));
+  auto ap_idx1 = ptable::number_by_symbol(atomic_name_to_symbol((al.m_geom->atom(at_num1))));
   vector3<float> bcolor1(0.0, 0.0, 1.0);
   if (ap_idx1) {
       bcolor1 = ptable::get_inst()->arecs[*ap_idx1 - 1].m_color_jmol;
     }
 
-  auto ap_idx2 = ptable::number_by_symbol(al.m_geom->atom(at_num2));
+  auto ap_idx2 = ptable::number_by_symbol(atomic_name_to_symbol((al.m_geom->atom(at_num2))));
   vector3<float> bcolor2(0.0, 0.0, 1.0);
   if (ap_idx1) {
       bcolor2 = ptable::get_inst()->arecs[*ap_idx2 - 1].m_color_jmol;
@@ -336,8 +346,8 @@ void geom_view_render_bs::render_bond_suprematic(geom_view_t &al,
       al.m_atom_type_to_hide_bond.find(al.m_geom->type_table(at_num2)) !=
       al.m_atom_type_to_hide_bond.end()) return;
 
-  auto ap_idx1 = ptable::number_by_symbol(al.m_geom->atom(at_num1));
-  auto ap_idx2 = ptable::number_by_symbol(al.m_geom->atom(at_num2));
+  auto ap_idx1 = ptable::number_by_symbol(atomic_name_to_symbol((al.m_geom->atom(at_num1))));
+  auto ap_idx2 = ptable::number_by_symbol(atomic_name_to_symbol((al.m_geom->atom(at_num2))));
   vector3<float> bcolor1(0.0, 0.0, 0.0);
   vector3<float> bcolor2(0.0, 0.0, 0.0);
 

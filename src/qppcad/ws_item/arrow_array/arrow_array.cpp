@@ -115,8 +115,10 @@ void arrow_array_view_t::render() {
     if (m_affected_by_sv && m_binded_gv->m_geom->xfield<bool>(xgeom_sel_vis_hide, i)) continue;
     
       vector3<float> start_pos = m_binded_vectors->start_pos(i);
-      vector3<float> end = m_binded_vectors->end_pos(i,m_unf_arrow_len );
+      vector3<float> end = m_binded_vectors->end_pos(i,m_unf_arrow_len - m_unf_arrow_cap_len);
       vector3<float> dir = (end - start_pos).normalized();
+      float val = m_binded_vectors->vectors[i].norm();
+      if (val < m_displ_eps) continue;
  
       matrix4<float> mat_body = matrix4<float>::Identity();
       mat_body.block<3,1>(0,3) = start_pos;

@@ -1,12 +1,16 @@
 #include <qppcad/render/camera.hpp>
 #include <qppcad/core/app_state.hpp>
 #include <qppcad/core/json_helpers.hpp>
+#include <QApplication>
 
 using namespace qpp;
 using namespace qpp::cad;
 
-float camera_t::nav_div_step_translation = 13.0;
-float camera_t::nav_div_step_rotation = 10.0;
+float camera_t::mouse_svty_rot = 3.33e0;
+float camera_t::mouse_svty_transl = 3.33e0;
+
+float camera_t::m_mouse_wheel_camera_step = 2.0f;
+float camera_t::m_mouse_zoom_min_distance = 4.0f;
 
 camera_t::camera_t () {
 
@@ -143,8 +147,8 @@ void camera_t::update_camera () {
 
   if (m_move_camera) {
 
-      float move_right = -x_dt / camera_t::nav_div_step_translation;
-      float move_up = y_dt / camera_t::nav_div_step_translation;
+    float move_right = -(1e0 + mouse_svty_transl)*x_dt / camera_t::nav_div_step_translation;
+    float move_up = (1e0 + mouse_svty_transl)*y_dt / camera_t::nav_div_step_translation;
 
       if (fabs(move_right) > camera_t::nav_thresh) {
           translate_camera_right(move_right);
@@ -170,16 +174,21 @@ void camera_t::update_camera () {
     float xrot =  x_scale * astate -> mouse_x_dc_old;
     float yrot =  y_scale * astate -> mouse_y_dc_old;
     
-    float deltax = x_dt/nav_div_step_rotation;
-    float deltay = y_dt/nav_div_step_rotation;
+    float deltax = (1e0 + mouse_svty_rot)*x_dt/nav_div_step_rotation;
+    float deltay = (1e0 + mouse_svty_rot)*y_dt/nav_div_step_rotation;
     float h = (m_view_point - m_look_at).norm();
+
+    bool ctrl_pressed = QApplication::keyboardModifiers() && Qt::ControlModifier;
 
     vector3<float> aa = -m_right*h*deltay - m_look_up*h*deltax + m_forward*(xrot*deltay - yrot*deltax);
 
     float phi = aa.norm()/(xrot*xrot + yrot*yrot + h*h);
     aa /= aa.norm();
-    
-    rotate_camera_around_axis(phi,aa);
+
+    if (ctrl_pressed)
+      rotate_camera_around_axis(deltax/h,m_forward);
+    else
+      rotate_camera_around_axis(phi,aa);
     astate->make_viewport_dirty();    
     
     /* --------- asm was here! -----------
@@ -260,7 +269,7 @@ void camera_t::update_camera_zoom (const float dist) {
         m_view_point += m_view_dir_n * f_dist_delta;
 
     } else {
-      m_ortho_scale -= dist;
+      m_ortho_scale -= dist * m_mouse_wheel_camera_step;
       m_ortho_scale = clamp(m_ortho_scale, 1.0f, 150.0f);
     }
 

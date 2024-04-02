@@ -38,7 +38,7 @@ namespace qpp {
         float m_shift_magn;
         bool m_is_active{false};
         bool m_is_interacting{false};
-        bool m_is_visible{true};
+        bool m_is_visible{false};
         gizmo_transform_type m_cur_ttype{gizmo_transform_type::translation};
 
         int8_t m_touched_axis{-1};
