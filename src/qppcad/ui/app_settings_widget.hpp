@@ -39,12 +39,12 @@ namespace qpp {
 
       static constexpr int sldmax = 200;
       
-      QSlider * sld_mouse_svty_rot;
-      QSlider * sld_mouse_svty_transl;
+      QSlider * sld_mouse_senty_rot;
+      QSlider * sld_mouse_senty_transl;
       QSlider * sld_mouse_wheel_step;
       QDoubleSpinBox * sb_mouse_wheel_step;
-      float new_mouse_svty_rot;
-      float new_mouse_svty_transl;
+      float new_mouse_senty_rot;
+      float new_mouse_senty_transl;
       float new_mouse_wheel_step;
 
       qspoiler_widget_t* mouse_settings();
@@ -54,8 +54,8 @@ namespace qpp {
       void save_button_clicked(); 
       void cancel_button_clicked(); 
 
-      void mouse_svty_rot_valueChanged();
-      void mouse_svty_transl_valueChanged();
+      void mouse_senty_rot_valueChanged();
+      void mouse_senty_transl_valueChanged();
       void mouse_wheel_step_sld_valueChanged();
       void mouse_wheel_step_sb_valueChanged(double d);
     };

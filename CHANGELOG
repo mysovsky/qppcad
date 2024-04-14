@@ -1,8 +1,12 @@
-24/04/02 Settings dialog activated. Settings moved to "Edit" menu.
+24/04/14 fix(rotation)
+	After previous edition rotation became laggy. Fixed now.
+	
+24/04/02 Settings
+	Settings dialog activated. Settings moved to "Edit" menu.
 	Mouse settings tab now allows to tune mouse sensitivity for rotations, translations and
 	mouse wheel step.
 	
-24/03/30 Tuning visible radii of atoms from Object Inspector.
+24/03/30 Manual edition of visible atomic radius from Object Inspector.
 	
 24/03/26 Properties of atoms with non-periodic table names
 	Unpleasent feature of previous edition of qppcad was that if an atomic name was not element
@@ -13,7 +17,7 @@
 	periodic table. I.e. F1, F2, F_cls are fluorines, while Si4, Si_shl, Si_adbas and Si_631 are silicons.
 	Separate color selection for different atomic names is available.
 	TODO: Decide about radius/color/bonding of atoms whose names do not start from element symbol.
-	TODO: Add the possibility to manually edit visible atomic radius.
+	TODO: Add the possibility to manually edit visible atomic radius (DONE)
 	
 24/03/25 Create arrow array
 	New submenu "Create new.." added to main menu "Workspace" item. It has four items:

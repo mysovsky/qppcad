@@ -25,15 +25,18 @@ bool python_manager_t::execute(std::string command) {
     if(!comm_is_empty) {
         if (!comm_has_equality && !comm_is_multiline && !comm_has_statement && !comm_is_multi) {
             py::object res = py::eval(command, py::globals());
-
+	    /*
             if (py::isinstance<py::int_>(res) || py::isinstance<py::float_>(res) ||
                 py::isinstance<py::str>(res) || py::isinstance<py::list>(res) ||
                 py::isinstance<py::dict>(res) || py::isinstance<py::bool_>(res) ||
                 py::isinstance<vector3<float> >(res) || py::isinstance<matrix3<float> >(res)) {
                 py::print(res);
-              }
+		}*/
+	    py::print(res);
+	    astate -> tlog("py_mgr -> exec : eval1 {}",command);
           } else {
             py::eval<py::eval_statements>(command, py::globals());
+	    astate -> tlog("py_mgr -> exec : eval2 {}",command);
           }
       }
 

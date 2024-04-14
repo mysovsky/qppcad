@@ -8,11 +8,13 @@
 #include <QMainWindow>
 #include <QTextStream>
 #include <QCommandLineParser>
+#include <QString>
+#include <QMessageBox>
 
 using namespace qpp;
 using namespace qpp::cad;
 
-int main (int argc, char **argv) {
+int main (int argc, char **argv){   //, char **envp) {
 
   std::ios_base::sync_with_stdio(false);
 
@@ -103,6 +105,21 @@ int main (int argc, char **argv) {
   QString style_sheet = QLatin1String(file.readAll());
   app.setStyleSheet(style_sheet);
 
+  // ---------- asm
+  /*
+  for (char **env = envp; *env != 0; env++)
+    {
+      char *thisEnv = *env;
+      astate -> tlog("{}\n", thisEnv);    
+    }
+  */
+
+  //astate -> m_plugins_dir = "hrenhren";
+  astate -> plug_mgr -> init();
+  //astate -> tlog("plugmgr status: {}\n", astate -> plug_mgr -> status);
+  //astate -> log(astate -> plug_mgr -> error_msg);
+  // asm ------------
+
   main_window_t w;
   astate->hotkey_mgr->m_main_window = &w;
   astate->hotkey_mgr->bootstrap_from_restore_info();
@@ -110,7 +127,6 @@ int main (int argc, char **argv) {
   w.rebuild_recent_files_menu();
   astate->ws_mgr->m_bhv_mgr->cache_obj_insp_widgets();
   w.showMaximized();
-
   int ret_code = app.exec();
 
   app_state_t::get_inst()->save_settings();

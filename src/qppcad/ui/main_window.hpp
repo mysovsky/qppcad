@@ -10,6 +10,7 @@
 #include <qppcad/render/camera.hpp>
 #include <qppcad/ui/ws_tabbar.hpp>
 #include <qppcad/ui/log_widget.hpp>
+#include <qppcad/python/python_plugin.hpp>
 
 #include <QMainWindow>
 #include <QShortcut>
@@ -165,6 +166,9 @@ namespace qpp {
         QAction *view_menu_toggle_debug_tws_tree;
         QAction *view_menu_toggle_sel_deque;
 
+      //asm
+      QMenu *plugins_menu;
+      
         QMenu *help_menu;
         QAction *help_menu_about;
         // End of Menus
@@ -266,7 +270,8 @@ namespace qpp {
         void control_bhv_menus_activity();
 
         // asm
-        void action_create_arrow_array();
+      void action_create_arrow_array();
+      void action_plugin_manager();
 
         void make_screenshot();
 

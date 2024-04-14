@@ -10,6 +10,7 @@
 #include <qppcad/core/workspace.hpp>
 #include <qppcad/core/app_state_event_disp.hpp>
 #include <qppcad/python/python_manager.hpp>
+#include <qppcad/python/python_plugin.hpp>
 #include <qppcad/core/string_hash_register.hpp>
 #include <qppcad/ui/size_guide.hpp>
 #include <qppcad/core/fixture.hpp>
@@ -145,6 +146,8 @@ namespace qpp {
         std::unique_ptr<python_manager_t> py_mgr;
         std::unique_ptr<string_hash_register_t> hash_reg;
         std::shared_ptr<hotkey_manager_t> hotkey_mgr;
+      // asm
+      std::unique_ptr<plugin_manager_t> plug_mgr;
 
         std::vector<recent_file_record_t> m_recent_files;
         // //       std::map<std::string, color_map_t> m_color_maps;
@@ -152,6 +155,11 @@ namespace qpp {
         std::vector<std::string> m_fixtures_dirs;
         bool m_fixtures_dir_is_set{false};
 
+      //asm
+      std::string m_qppcad_root_dir;
+      std::string m_plugins_dir;
+      std::string m_data_dir;
+      
         QString m_last_dir;
         QString m_font_name;
         QString m_screen_shots_dir{"."};

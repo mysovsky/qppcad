@@ -6,10 +6,12 @@
 
 #include <qppcad/core/app_state.hpp>
 #include <qppcad/ws_item/geom_view/geom_view.hpp>
+#include <qpp/modules/pyqpp/pyqpp.hpp>
 
 using namespace qpp;
 using namespace qpp::cad;
 
+/*
 void pyqpp_linalg_export(py::module m);
 void pyqpp_opaque_types_export(py::module m);
 void pyqpp_cell_export(py::module m);
@@ -18,6 +20,8 @@ void pyqpp_xgeom_export(py::module m);
 void pyqpp_builders_export(py::module m);
 void pyqpp_autosymm_export(py::module m);
 void pyqpp_ccd_export(py::module m);
+void pyqpp_neighbours_export(py::module m);
+*/
 
 qpp::xgeometry<float, qpp::periodic_cell<float>  >* claim_xgeom() {
 
@@ -48,6 +52,7 @@ PYBIND11_EMBEDDED_MODULE(pyqpp, m) {
   pyqpp_autosymm_export(m);
   pyqpp_builders_export(m);
   pyqpp_ccd_export(m);
+  pyqpp_neighbours_export(m);
   m.def("claim_xgeom", &claim_xgeom, py::return_value_policy::reference);
 
 }

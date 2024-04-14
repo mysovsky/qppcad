@@ -15,6 +15,7 @@
 #include <qppcad/ws_item/geom_view/geom_view_labels_subsys.hpp>
 #include <qppcad/ws_item/arrow_primitive/arrow_primitive.hpp>
 #include <qppcad/python/python_simple_query.hpp>
+#include <qppcad/python/python_plugin.hpp>
 
 #include <QDateTime>
 #include <QColorDialog>
@@ -39,6 +40,7 @@ main_window_t::main_window_t(QWidget *parent) : QMainWindow(parent) {
   control_bhv_menus_activity();
   control_bhv_tools_menus_activity();
   init_widgets();
+  //astate -> plug_mgr -> load_plugins();
   init_layouts();
   build_bhv_toolpanel();
 
@@ -101,8 +103,42 @@ void main_window_t::init_base_shortcuts() {
 
 }
 
+// asm -----------------
+
+void build_plugins_menu(QMenu * menu, std::shared_ptr<plugin_tree_t> p){
+  app_state_t* astate = app_state_t::get_inst();
+  for (auto pair : p -> nested){
+    std::string s = pair.first;
+    auto ptr = pair.second;
+    if (!ptr){
+      auto plugin_act = new QAction(nullptr);
+      plugin_act -> setText(s.c_str());
+      menu -> addAction(plugin_act);      
+      QObject::connect(plugin_act,
+		       &QAction::triggered,
+		       [s,ptr]() {
+			 //astate -> plug_mgr -> load_plugins();
+			 ptr -> plugin -> run();
+			 QMessageBox::warning(nullptr,
+					      s.c_str(),
+					      s.c_str());
+			 
+		       });
+      
+    }
+    else {
+      auto submenu = menu -> addMenu(QString(s.c_str()));
+      build_plugins_menu(submenu,ptr);
+    }
+  }
+}
+
+// ---------------------- asm
+
 void main_window_t::init_menus() {
 
+  app_state_t* astate = app_state_t::get_inst();
+  
   file_menu  = menuBar()->addMenu(tr("&File"));
 
   file_menu_new_ws = new QAction(nullptr);
@@ -419,6 +455,53 @@ void main_window_t::init_menus() {
 
   // end of view menu
 
+  // asm
+  // plugins menu
+
+  //astate -> tlog("plugmgr status: {}\n", astate -> plug_mgr -> status);
+  if (astate -> plug_mgr -> status == plugin_manager_t::plugmgr_plugin_folder_not_found ||
+      astate -> plug_mgr -> status == plugin_manager_t::plugmgr_plugins_missing){
+    //astate -> tlog("plugin status:\n {}\n", astate -> plug_mgr -> error_msg);
+    QMessageBox::warning(nullptr,
+			 QString("Plugin error!"),
+			 QString(astate -> plug_mgr -> error_msg.c_str()));    
+  }
+  else {
+    //astate -> plug_mgr -> load_plugins();
+    if (astate -> plug_mgr -> status != plugin_manager_t::plugmgr_ok)
+      QMessageBox::warning(nullptr,
+			   QString("Plugin error!"),
+			   QString(astate -> plug_mgr -> error_msg.c_str()));      
+    
+    plugins_menu = menuBar()->addMenu(tr("&Plugins"));
+
+    build_plugins_menu(plugins_menu, astate -> plug_mgr -> plugins);
+    
+    /*
+    for (const auto & plugin : (astate -> plug_mgr -> hdr_names)){
+	auto plugin_act = new QAction(nullptr);
+	plugin_act -> setText(plugin.c_str());
+	plugins_menu -> addAction(plugin_act);
+    
+	connect(plugin_act,
+		&QAction::triggered,
+		[plugin]() {
+		  QMessageBox::warning(nullptr,
+				       plugin.c_str(),
+				       plugin.c_str());
+		});
+		}*/
+    auto plugins_manage = new QAction(nullptr);
+    plugins_manage -> setText(tr("Manage plugins ..."));
+    plugins_menu -> addAction(plugins_manage);
+    connect(plugins_manage,
+	    &QAction::triggered,
+	    this,
+	    &main_window_t::action_plugin_manager);
+    
+  }
+  // end of plugins menu
+  
   // help menu
   help_menu  = menuBar()->addMenu(tr("&Help"));
   help_menu_about = new QAction(nullptr);
@@ -2069,3 +2152,8 @@ void main_window_t::action_create_arrow_array() {
   add_dialog.exec(); 
   
 }
+
+void main_window_t::action_plugin_manager(){
+
+}
+

@@ -2,9 +2,13 @@
 #include <QSettings>
 #include <QFileInfo>
 #include <QDir>
+#include <QApplication>
 #include <data/ptable.hpp>
 #include <thread>
 #include <qppcad/core/hotkey_manager.hpp>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace qpp {
 
@@ -68,6 +72,7 @@ namespace qpp {
       ws_mgr     = std::make_shared<workspace_manager_t>(this);
       py_mgr     = std::make_unique<python_manager_t>();
       hotkey_mgr = std::make_shared<hotkey_manager_t>();
+      plug_mgr   = std::make_unique<plugin_manager_t>();
 
     }
 
@@ -273,6 +278,31 @@ namespace qpp {
       settings.beginGroup("hotkey_manager");
       hotkey_mgr->load_from_settings(settings);
       settings.endGroup();
+
+      //asm
+      auto irdir = m_env_str.find("QPPCAD_ROOT_DIR");
+      if (irdir != m_env_str.end() )
+	m_qppcad_root_dir = irdir -> second;
+      else {
+	QString appDir = qApp->applicationDirPath();
+	fs::path appp = fs::path(appDir.toStdString())/"..";
+	m_qppcad_root_dir = fs::canonical(appp).string();
+      }
+      
+      auto ipdir = m_env_str.find("PLUGINS_DIR");
+      if (ipdir != m_env_str.end() )
+	m_plugins_dir = ipdir -> second;
+      else 
+	m_plugins_dir = fs::absolute(fs::path(m_qppcad_root_dir)/"plugins").string();
+
+      
+      auto iddir = m_env_str.find("DATA_DIR");
+      if (iddir != m_env_str.end() )
+	m_data_dir = iddir -> second;
+      else 
+	m_data_dir = fs::absolute(fs::path(m_qppcad_root_dir)/"data").string();
+
+      tlog("ROOT DIR: {}\n PLUGINS DIR: {}\n DATA DIR: {}\n",m_qppcad_root_dir, m_plugins_dir, m_data_dir );
 
     }
 

@@ -1,8 +1,8 @@
 cmake_minimum_required (VERSION 3.2)
 project(qppcad CXX C)
 
-set(CMAKE_BUILD_TYPE "Debug")
-#set(CMAKE_BUILD_TYPE "Release")
+#set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
 
 add_definitions(-DFMT_HEADER_ONLY)
 if(NOT MSVC)
@@ -172,6 +172,7 @@ add_executable(
     deps/qpp/modules/pyqpp/pyqpp_builders.cpp
     deps/qpp/modules/pyqpp/pyqpp_ccd.cpp
     deps/qpp/modules/pyqpp/pyqpp_opaque_types.cpp
+    deps/qpp/modules/pyqpp/pyqpp_neighbours.cpp
     deps/qpp/modules/data/errors.cpp
 
     ${SRC_RENDER}

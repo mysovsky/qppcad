@@ -21,17 +21,19 @@ namespace qpp {
 
         static constexpr float norm_eps = 0.00001f;
         static constexpr float nav_thresh = 0.00001f;
-        static constexpr float nav_div_step_translation = 42e0;
-        static constexpr float nav_div_step_rotation = 42e0;
-        static constexpr float max_mouse_svty = 10e0;
-        static constexpr float max_mouse_wheel_step = 5e0;
-        static float mouse_svty_rot;
-        static float mouse_svty_transl;
+        static constexpr int   nav_div_step_translation = 13;
+        static constexpr int   nav_div_step_rotation = 43;
 
-        static float m_mouse_wheel_camera_step;
-        static float m_mouse_zoom_min_distance;
+      // ---------- asm --------------
+      static constexpr float max_mouse_senty = 1e0;
+      static constexpr float max_mouse_wheel_step = 5e0;
+      static float mouse_senty_rot;
+      static float mouse_senty_transl;
       
-        vector3<float> m_view_point;
+      static float m_mouse_wheel_camera_step;
+      static float m_mouse_zoom_min_distance;
+
+      vector3<float> m_view_point;
         vector3<float> m_view_dir;
         vector3<float> m_look_at;
         vector3<float> m_look_up;

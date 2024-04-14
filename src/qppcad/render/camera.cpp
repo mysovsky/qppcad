@@ -6,8 +6,9 @@
 using namespace qpp;
 using namespace qpp::cad;
 
-float camera_t::mouse_svty_rot = 3.33e0;
-float camera_t::mouse_svty_transl = 3.33e0;
+
+float camera_t::mouse_senty_rot    = 1e0;
+float camera_t::mouse_senty_transl = 1e0;
 
 float camera_t::m_mouse_wheel_camera_step = 2.0f;
 float camera_t::m_mouse_zoom_min_distance = 4.0f;
@@ -147,8 +148,8 @@ void camera_t::update_camera () {
 
   if (m_move_camera) {
 
-    float move_right = -(1e0 + mouse_svty_transl)*x_dt / camera_t::nav_div_step_translation;
-    float move_up = (1e0 + mouse_svty_transl)*y_dt / camera_t::nav_div_step_translation;
+      float move_right = - camera_t::mouse_senty_transl * x_dt / camera_t::nav_div_step_translation;
+      float move_up    =   camera_t::mouse_senty_transl * y_dt / camera_t::nav_div_step_translation;
 
       if (fabs(move_right) > camera_t::nav_thresh) {
           translate_camera_right(move_right);
@@ -163,7 +164,7 @@ void camera_t::update_camera () {
     }
 
   if (m_rotate_camera) {
-
+    
     float width   = astate->viewport_size(0);
     float height  = astate->viewport_size(1);
     float x_scale = 1.0f;
@@ -171,30 +172,33 @@ void camera_t::update_camera () {
     if (width > height) x_scale = width / (height );
     else  y_scale = height / (width );
 
-    float xrot =  x_scale * astate -> mouse_x_dc_old;
-    float yrot =  y_scale * astate -> mouse_y_dc_old;
-    
-    float deltax = (1e0 + mouse_svty_rot)*x_dt/nav_div_step_rotation;
-    float deltay = (1e0 + mouse_svty_rot)*y_dt/nav_div_step_rotation;
+    float xpos =  x_scale * astate -> mouse_x_dc_old;
+    float ypos =  y_scale * astate -> mouse_y_dc_old;
+    /*
+    float xpos =  astate -> mouse_x_dc_old;
+    float ypos =  astate -> mouse_y_dc_old;
+    */
+    float rot_angle_x = astate->mouse_y - astate->mouse_y_old;
+    float rot_angle_y = astate->mouse_x - astate->mouse_x_old;
+    rot_angle_x  *= camera_t::mouse_senty_rot/camera_t::nav_div_step_rotation;
+    rot_angle_y  *= camera_t::mouse_senty_rot/camera_t::nav_div_step_rotation;
     float h = (m_view_point - m_look_at).norm();
 
+    vector3<float> ax = -m_right*rot_angle_x - m_look_up*rot_angle_y +
+      m_forward*(xpos*rot_angle_x - ypos*rot_angle_y)/h;
+    float phi = ax.norm();
+    ax /= phi;
+
     bool ctrl_pressed = QApplication::keyboardModifiers() && Qt::ControlModifier;
-
-    vector3<float> aa = -m_right*h*deltay - m_look_up*h*deltax + m_forward*(xrot*deltay - yrot*deltax);
-
-    float phi = aa.norm()/(xrot*xrot + yrot*yrot + h*h);
-    aa /= aa.norm();
-
     if (ctrl_pressed)
-      rotate_camera_around_axis(deltax/h,m_forward);
+      rotate_camera_around_axis(rot_angle_y, m_forward);
     else
-      rotate_camera_around_axis(phi,aa);
+      rotate_camera_around_axis(phi,ax);
     astate->make_viewport_dirty();    
-    
-    /* --------- asm was here! -----------
-
-    float rot_angle_x = y_dt / camera_t::nav_div_step_rotation;
-    float rot_angle_y = x_dt / camera_t::nav_div_step_rotation;
+    // ----------------- asm ---------------
+    /*
+      float rot_angle_x = y_dt / camera_t::nav_div_step_rotation;
+      float rot_angle_y = x_dt / camera_t::nav_div_step_rotation;
 
       if (fabs(rot_angle_y) > camera_t::nav_thresh && !m_rotate_over) {
           rotate_camera_orbit_yaw(rot_angle_y);
@@ -212,7 +216,7 @@ void camera_t::update_camera () {
           astate->make_viewport_dirty();
         }
     */
-    
+
     }
 
   if (m_cur_proj == cam_proj_t::proj_persp) {
@@ -269,7 +273,7 @@ void camera_t::update_camera_zoom (const float dist) {
         m_view_point += m_view_dir_n * f_dist_delta;
 
     } else {
-      m_ortho_scale -= dist * m_mouse_wheel_camera_step;
+      m_ortho_scale -= dist;
       m_ortho_scale = clamp(m_ortho_scale, 1.0f, 150.0f);
     }
 

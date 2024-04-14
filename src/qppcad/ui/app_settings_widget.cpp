@@ -121,37 +121,40 @@ qspoiler_widget_t* app_settings_widget_t::mouse_settings(){
   q -> add_content_layout(lt);
 
   lt -> addWidget(new QLabel(tr("Mouse sensitivity for rotation"), this));
-  sld_mouse_svty_rot = new QSlider(Qt::Horizontal, this);
-  lt -> addWidget(sld_mouse_svty_rot);
-  sld_mouse_svty_rot -> setMinimum(0);
-  sld_mouse_svty_rot -> setMaximum(sldmax);
-  new_mouse_svty_rot = camera_t::mouse_svty_rot;
-  sld_mouse_svty_rot -> setValue(float_to_slider(new_mouse_svty_rot, 0e0, camera_t::max_mouse_svty));
-  QObject::connect(sld_mouse_svty_rot, & QSlider::valueChanged,
-		   this, & app_settings_widget_t::mouse_svty_rot_valueChanged);
+  sld_mouse_senty_rot = new QSlider(Qt::Horizontal, this);
+  lt -> addWidget(sld_mouse_senty_rot);
+  sld_mouse_senty_rot -> setMinimum(1);
+  sld_mouse_senty_rot -> setMaximum(sldmax);
+  new_mouse_senty_rot = camera_t::mouse_senty_rot;
+  sld_mouse_senty_rot -> setValue(float_to_slider(new_mouse_senty_rot, 0e0, camera_t::max_mouse_senty));
+  QObject::connect(sld_mouse_senty_rot, & QSlider::valueChanged,
+		   this, & app_settings_widget_t::mouse_senty_rot_valueChanged);
   
   lt -> addWidget(new QLabel(tr("Mouse sensitivity for translation"), this));
-  sld_mouse_svty_transl = new QSlider(Qt::Horizontal, this);
-  lt -> addWidget(sld_mouse_svty_transl);
-  sld_mouse_svty_transl -> setMinimum(0);
-  sld_mouse_svty_transl -> setMaximum(sldmax);
-  new_mouse_svty_transl = camera_t::mouse_svty_transl;
-  sld_mouse_svty_transl -> setValue(float_to_slider(new_mouse_svty_transl, 0e0, camera_t::max_mouse_svty));
-  QObject::connect(sld_mouse_svty_transl, & QSlider::valueChanged,
-		   this, & app_settings_widget_t::mouse_svty_transl_valueChanged);
+  sld_mouse_senty_transl = new QSlider(Qt::Horizontal, this);
+  lt -> addWidget(sld_mouse_senty_transl);
+  sld_mouse_senty_transl -> setMinimum(1);
+  sld_mouse_senty_transl -> setMaximum(sldmax);
+  new_mouse_senty_transl = camera_t::mouse_senty_transl;
+  sld_mouse_senty_transl -> setValue(float_to_slider(new_mouse_senty_transl, 0e0, camera_t::max_mouse_senty));
+  QObject::connect(sld_mouse_senty_transl, & QSlider::valueChanged,
+		   this, & app_settings_widget_t::mouse_senty_transl_valueChanged);
   
   sld_mouse_wheel_step = new QSlider(Qt::Horizontal, this);
-  sld_mouse_wheel_step -> setMinimum(0);
+  sld_mouse_wheel_step -> setMinimum(1);
   sld_mouse_wheel_step -> setMaximum(sldmax);
   new_mouse_wheel_step = camera_t::m_mouse_wheel_camera_step;
   sld_mouse_wheel_step -> setValue(float_to_slider(new_mouse_wheel_step, 0e0, camera_t::max_mouse_wheel_step));
   sb_mouse_wheel_step = new QDoubleSpinBox(this);
   sb_mouse_wheel_step -> setValue(new_mouse_wheel_step);
+  sb_mouse_wheel_step -> setMinimum(0.01);
+  sb_mouse_wheel_step -> setMaximum(camera_t::max_mouse_wheel_step);
   sb_mouse_wheel_step -> setSingleStep(0.1);
   auto mwlt = new QHBoxLayout;
   lt -> addLayout(mwlt);
   mwlt -> addWidget(new QLabel(tr("Mouse wheel step"), this));
   mwlt -> addWidget(sb_mouse_wheel_step);
+  mwlt -> addStretch();
   lt -> addWidget(sld_mouse_wheel_step);
   QObject::connect(sld_mouse_wheel_step, & QSlider::valueChanged,
 		   this, & app_settings_widget_t::mouse_wheel_step_sld_valueChanged);
@@ -164,12 +167,12 @@ qspoiler_widget_t* app_settings_widget_t::mouse_settings(){
   return q;
 }
 
-void app_settings_widget_t::mouse_svty_rot_valueChanged(){
-  new_mouse_svty_rot = slider_to_float(sld_mouse_svty_rot -> value(), 0e0, camera_t::max_mouse_svty);
+void app_settings_widget_t::mouse_senty_rot_valueChanged(){
+  new_mouse_senty_rot = slider_to_float(sld_mouse_senty_rot -> value(), 0e0, camera_t::max_mouse_senty);
 }
 
-void app_settings_widget_t::mouse_svty_transl_valueChanged(){
-  new_mouse_svty_transl = slider_to_float(sld_mouse_svty_transl -> value(), 0e0, camera_t::max_mouse_svty);
+void app_settings_widget_t::mouse_senty_transl_valueChanged(){
+  new_mouse_senty_transl = slider_to_float(sld_mouse_senty_transl -> value(), 0e0, camera_t::max_mouse_senty);
 }
 
 void app_settings_widget_t::mouse_wheel_step_sld_valueChanged(){
@@ -184,8 +187,8 @@ void app_settings_widget_t::mouse_wheel_step_sb_valueChanged(double d){
 
 void app_settings_widget_t::save_button_clicked() {
   
-  camera_t::mouse_svty_rot = new_mouse_svty_rot;
-  camera_t::mouse_svty_transl = new_mouse_svty_transl;
+  camera_t::mouse_senty_rot = new_mouse_senty_rot;
+  camera_t::mouse_senty_transl = new_mouse_senty_transl;
   camera_t::m_mouse_wheel_camera_step = new_mouse_wheel_step;
    
   accept();
