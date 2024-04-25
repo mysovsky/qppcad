@@ -115,6 +115,7 @@ int main (int argc, char **argv){   //, char **envp) {
   */
 
   //astate -> m_plugins_dir = "hrenhren";
+  astate -> plug_mgr = std::make_unique<plugin_manager_t>(astate -> m_plugins_dir);
   astate -> plug_mgr -> init();
   //astate -> tlog("plugmgr status: {}\n", astate -> plug_mgr -> status);
   //astate -> log(astate -> plug_mgr -> error_msg);

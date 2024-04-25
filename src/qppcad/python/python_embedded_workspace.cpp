@@ -25,6 +25,7 @@ using namespace qpp::cad;
 
 namespace py = pybind11;
 
+
 std::shared_ptr<ws_item_t> construct_from_geom(
     workspace_t &ws,
     std::shared_ptr<xgeometry<float, periodic_cell<float> > > geom,
@@ -42,6 +43,7 @@ std::shared_ptr<ws_item_t> construct_from_geom(
       }
 
     as_gv->m_geom = geom;
+    as_gv -> hardcoded_xfields = false;
     as_gv->m_ext_obs->geom = as_gv->m_geom.get();
     as_gv->m_tws_tr->geom = as_gv->m_geom.get();
 
@@ -77,6 +79,9 @@ std::shared_ptr<ws_item_t> construct_from_array_group(
 
 }
 
+  
+
+
 //void upd_oi(ws_item_t *_item) {
 
 //  if (_item && _item->m_selected)
@@ -90,7 +95,6 @@ void mvd() {
   astate->make_viewport_dirty();
 
 }
-
 
 void cws_changed() {
 

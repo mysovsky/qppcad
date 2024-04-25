@@ -111,6 +111,7 @@ namespace qpp {
     const int xgeom_override     = 12;
     const int xgeom_atom_r       = 13;
     const int xgeom_external     = 14;
+    const int xgeom_shadow       = -1;
 
     const int max_sel_in_deque = 4;
 
@@ -173,7 +174,14 @@ namespace qpp {
         bool m_sel_vis{false};
         bool m_sel_vis_affect_bonds{false};
 
+      // asm
+      bool hardcoded_xfields{true};
+      int xgeom_hide{xgeom_sel_vis_hide};
+
         geom_view_t();
+
+        // asm
+        geom_view_t(std::shared_ptr<xgeometry<float, periodic_cell<float> > > g, bool hardcoded = false);
 
         void vote_for_view_vectors(vector3<float> &out_look_pos,
                                    vector3<float> &out_look_at) override ;
@@ -263,6 +271,9 @@ namespace qpp {
         template <typename XFIELD>
         bool any_of_sel_xfield_equal(int xfield_id, XFIELD xfield_val) {
 
+	  if (!hardcoded_xfields)
+	    return false;
+	  
           auto cnt_override =
               [this, &xfield_id, &xfield_val](const atom_index_set_key &rec) -> bool {
               return this->m_geom->xfield<XFIELD>(xfield_id, rec.m_atm) == xfield_val;

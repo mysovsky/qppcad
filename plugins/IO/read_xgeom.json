@@ -1,0 +1,46 @@
+{
+    "name"       : "read_xgeom",
+    "file"       : "read_xgeom",
+    "menu name"  : "Import arbitrary xgeometry",
+    "description": "Import arbitrary xgeometry with any possible header",
+    "function"   : "read_xgeom",
+    "parameters" : {
+	"filename" : {
+	    "type"        : "string",
+	    "description" : "Filename to open",
+	    "default"     : "",	    
+	    "position"    : 1,
+	    "browse"      : "open"
+	},
+	"field_names" : {
+	    "type"        : "list(string)",
+	    "description" : "The names of xgeometry fields in the form of comma-separated list",
+	    "default"     : "atom, x, y, z",	    
+	    "position"    : 2
+	},
+	"field_types" : {
+	    "type"        : "list(string)",
+	    "description" : "Corresponding types of xgeometry fields in the form of comma-separated list.\n Valid types are bool, int, string, float, as well as\nlist(bool), list(int), list(string) and list(float).",
+	    "default"     : "string, float, float, float",	    
+	    "position"    : 3
+	},
+	"l_geom" : {
+	    "type"        : "int",
+	    "description" : "Starting line to read xgeometry",
+	    "default"     : "3",	    
+	    "position"    : 4
+	},
+	"read_cell" : {
+	    "type"        : "bool",
+	    "description" : "Whether to read cell vectors from the same file",
+	    "default"     : "false",
+	    "position"    : 5
+	},
+	"l_cell" : {
+	    "type"        : "int",
+	    "description" : "Starting line to read cell vectors. Nine numbers will be\n red either from this one line or from next lines.",
+	    "default"     : "2",
+	    "position"    : 6
+	}
+    }
+}

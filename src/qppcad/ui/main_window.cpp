@@ -1,5 +1,6 @@
 #include <qppcad/ui/main_window.hpp>
 #include <qppcad/core/app_state.hpp>
+#include <qppcad/core/workspace.hpp>
 
 #include <qppcad/ui/app_settings_widget.hpp>
 #include <qppcad/ui/add_new_ws_item_widget.hpp>
@@ -16,6 +17,7 @@
 #include <qppcad/ws_item/arrow_primitive/arrow_primitive.hpp>
 #include <qppcad/python/python_simple_query.hpp>
 #include <qppcad/python/python_plugin.hpp>
+#include <qppcad/python/plugin_param_editor.hpp>
 
 #include <QDateTime>
 #include <QColorDialog>
@@ -105,25 +107,120 @@ void main_window_t::init_base_shortcuts() {
 
 // asm -----------------
 
+
+std::shared_ptr<ws_item_t> construct_from_geom1(
+    workspace_t &ws,
+    std::shared_ptr<xgeometry<float, periodic_cell<float> > > geom,
+    const std::string &name) {
+
+    auto new_item = ws.m_owner->m_bhv_mgr->fbr_ws_item_by_type(geom_view_t::get_type_static());
+    if (!new_item) return nullptr;
+
+    auto as_gv = new_item->cast_as<geom_view_t>();
+    if(!as_gv) return nullptr;
+
+    if (as_gv->m_geom) {
+        as_gv->m_geom->remove_observer(*as_gv->m_ext_obs);
+        as_gv->m_geom->remove_observer(*as_gv->m_tws_tr);
+      }
+
+    as_gv->m_geom = geom;
+    as_gv -> hardcoded_xfields = false;
+    as_gv->m_ext_obs->geom = as_gv->m_geom.get();
+    as_gv->m_tws_tr->geom = as_gv->m_geom.get();
+
+    as_gv->m_tws_tr->do_action(act_lock | act_clear_all);
+    as_gv->m_geom->add_observer(*as_gv->m_ext_obs);
+    as_gv->m_geom->add_observer(*as_gv->m_tws_tr);
+    as_gv->m_tws_tr->do_action(act_unlock | act_rebuild_tree);
+    as_gv->m_tws_tr->do_action(act_rebuild_ntable);
+    as_gv->m_name = name;
+    ws.add_item_to_ws(new_item);
+
+    return new_item;
+
+}
+
+
+bool consider_ws_add(py::object & obj){
+  auto astate = app_state_t::get_inst();
+  std::stringstream ss;
+  py::object tp = py::eval("type");
+  ss <<  py::cast<std::string>(py::str(tp(obj)));
+  auto g = py::cast<std::shared_ptr<xgeometry<float, periodic_cell<float> > > >(obj);
+  if (ss.str() == "<class 'pyqpp.xgeometry_f'>"){    
+    construct_from_geom1(*(astate -> ws_mgr -> get_cur_ws()), g, g->name );
+    return true;
+  }
+  return false;
+}
+
+std::string use_plugin_results(py::object & results){
+  if (results == py::none())
+    return "";
+  std::string s;
+  if (py::isinstance<py::tuple>(results)){
+    auto tuple_res = py::cast<py::tuple>(results);
+    for (auto hnd : tuple_res){
+      auto obj = py::cast<py::object>(hnd);
+      if (!consider_ws_add(obj))
+	s = s + py::cast<std::string>(py::str(obj));
+    }
+  }
+  else {
+    if (!consider_ws_add(results))
+      s = py::cast<std::string>(py::str(results));
+  }
+  return s;  
+}
+
+// asm -----------------
+
 void build_plugins_menu(QMenu * menu, std::shared_ptr<plugin_tree_t> p){
   app_state_t* astate = app_state_t::get_inst();
-  for (auto pair : p -> nested){
-    std::string s = pair.first;
-    auto ptr = pair.second;
-    if (!ptr){
+  for (auto ptr : p -> nested){
+    std::string s = ptr -> name;
+    if (ptr -> nested.empty()){
       auto plugin_act = new QAction(nullptr);
-      plugin_act -> setText(s.c_str());
-      menu -> addAction(plugin_act);      
-      QObject::connect(plugin_act,
-		       &QAction::triggered,
-		       [s,ptr]() {
-			 //astate -> plug_mgr -> load_plugins();
-			 ptr -> plugin -> run();
-			 QMessageBox::warning(nullptr,
-					      s.c_str(),
-					      s.c_str());
+      std::string ms = ptr -> plugin ->  plug_menu_name;
+      plugin_act -> setText( ms!="" ? ms.c_str() : s.c_str());
+      menu -> addAction(plugin_act);
+      if (ptr -> plugin -> status != plugin_manager_t::plugmgr_ok)
+	QObject::connect(plugin_act,
+			 &QAction::triggered,
+			 [s,ptr]() {
+			   //astate -> plug_mgr -> load_plugins();
+			   //ptr -> plugin -> run();
+			   QMessageBox::warning(nullptr,
+						s.c_str(),
+						ptr -> plugin -> error_msg.c_str());
 			 
 		       });
+      else {
+	QObject::connect(plugin_act,
+			 &QAction::triggered,
+			 [s,ptr,astate]() {
+			   //astate -> plug_mgr -> load_plugins();
+			   plugin_param_editor_t  parm_dialog(ptr -> plugin);
+			   parm_dialog.exec();
+			   if (parm_dialog.result()==QDialog::Accepted)
+			     try{
+			       auto results = ptr -> plugin -> run();
+			       std::string res = use_plugin_results(results);
+			       if (res!="")
+				 QMessageBox::information(nullptr,
+							  s.c_str(),
+							  res.c_str());
+			     }
+			     catch (py::error_already_set &err) {
+			       astate -> make_viewport_dirty();
+			       QMessageBox::warning(nullptr,
+						    s.c_str(),
+						    err.what());			     
+			     }
+			 });
+	
+      }
       
     }
     else {
@@ -475,7 +572,7 @@ void main_window_t::init_menus() {
     
     plugins_menu = menuBar()->addMenu(tr("&Plugins"));
 
-    build_plugins_menu(plugins_menu, astate -> plug_mgr -> plugins);
+    build_plugins_menu(plugins_menu, astate -> plug_mgr -> plug_tree);
     
     /*
     for (const auto & plugin : (astate -> plug_mgr -> hdr_names)){
@@ -493,6 +590,7 @@ void main_window_t::init_menus() {
 		}*/
     auto plugins_manage = new QAction(nullptr);
     plugins_manage -> setText(tr("Manage plugins ..."));
+    plugins_manage -> setEnabled(false);
     plugins_menu -> addAction(plugins_manage);
     connect(plugins_manage,
 	    &QAction::triggered,

@@ -1698,7 +1698,8 @@ void geom_view_obj_insp_widget_t::update_modify_tab() {
                 }
 
               /* begin atom override */
-              if (!b_al->any_of_sel_xfield_equal<bool>(xgeom_override, false)) {
+              if (b_al -> hardcoded_xfields &&
+		  !b_al->any_of_sel_xfield_equal<bool>(xgeom_override, false)) {
 
                   std::set<size_t> atoms_id_to_bind;
                   std::transform(
@@ -1707,6 +1708,7 @@ void geom_view_obj_insp_widget_t::update_modify_tab() {
                         std::inserter(atoms_id_to_bind, atoms_id_to_bind.begin()),
                         [](auto &sel_rec){return sel_rec.m_atm;}
                   );
+		  app_state_t::get_inst() -> tlog("suspision 15");
 
                   tm_gb_override_atom->show();
                   tm_override_atom_color->bind_value(b_al->m_geom.get(),

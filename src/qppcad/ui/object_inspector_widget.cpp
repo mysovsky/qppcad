@@ -16,6 +16,15 @@ object_inspector_widget_t::object_inspector_widget_t(QWidget *parent) : qembed_w
   ew_header->setText(tr("OBJECT INSPECTOR"));
   header_frm->setObjectName("obj_insp_header_frame");
 
+  btn_exteditor =  new QPushButton;
+  btn_exteditor->setFixedSize(QSize(astate->size_guide.spoiler_button_h(),
+                           astate->size_guide.spoiler_button_h()));
+  btn_exteditor->setIconSize(QSize(astate->size_guide.spoiler_button_icon_h(),
+                          astate->size_guide.spoiler_button_icon_h()));
+  btn_exteditor->setIcon(QIcon("://images/outline-receipt-24px.svg"));
+  btn_exteditor->setFlat(true);
+  btn_exteditor->setToolTip(tr("Open extended editor for the item"));
+  
   btn_add_new_ws_item = new QPushButton;
   btn_add_new_ws_item->setFixedSize(QSize(astate->size_guide.spoiler_button_h(),
                                           astate->size_guide.spoiler_button_h()));
@@ -34,6 +43,11 @@ object_inspector_widget_t::object_inspector_widget_t(QWidget *parent) : qembed_w
   btn_refresh_oi->setFlat(true);
   btn_refresh_oi->setToolTip(tr("Refresh the object inspector"));
 
+  connect(btn_exteditor,
+          &QPushButton::clicked,
+          this,
+          &object_inspector_widget_t::exteditor_button_clicked);
+
   connect(btn_refresh_oi,
           &QPushButton::clicked,
           this,
@@ -46,6 +60,7 @@ object_inspector_widget_t::object_inspector_widget_t(QWidget *parent) : qembed_w
 
   header_lt->insertWidget(1, btn_refresh_oi);
   header_lt->insertWidget(1, btn_add_new_ws_item);
+  header_lt->insertWidget(1, btn_exteditor);
 
   ws_items_list = new QListWidget;
   ws_items_list->setFocusPolicy(Qt::NoFocus);
@@ -259,6 +274,15 @@ void object_inspector_widget_t::ws_item_list_double_clicked(QListWidgetItem *ite
   astate->astate_evd->extended_editor_open_requested();
 
 }
+
+
+void object_inspector_widget_t::exteditor_button_clicked() {
+
+  app_state_t* astate = app_state_t::get_inst();
+  astate->astate_evd->extended_editor_open_requested();
+
+}
+
 
 void object_inspector_widget_t::refresh_button_clicked() {
 

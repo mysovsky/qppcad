@@ -9,7 +9,15 @@
 
 #include <QStringList>
 #include <filesystem>
+#include <variant>
 #include <map>
+#include <data/types.hpp>
+
+#include <qppcad/core/json_adapter.hpp>
+#include <qppcad/ws_item/geom_view/geom_view.hpp>
+
+//#include <nlohmann/json.hpp>
+//using json = nlohmann::json;
 
 namespace fs = std::filesystem;
 
@@ -19,9 +27,41 @@ namespace qpp {
 
   namespace cad {
 
+    typedef std::variant<double, float, int, bool, std::string,
+			 std::vector<double>, std::vector<float>, std::vector<int>,
+			 std::vector<char>,  std::vector<std::string >,
+			 std::shared_ptr<xgeometry<float, periodic_cell<float> > > > plugin_param_value_t;
+    
+    // --------------------------------------------------------------
+    
+    struct plugin_param_t{
+      
+      basic_types type;
+      std::string name;
+      std::string description;
+      int pos;
+      std::string browse;
+
+      plugin_param_value_t value;
+      std::string default_sval, sval;
+
+      plugin_param_t(basic_types t, const std::string & n, const std::string & d);
+
+      bool fromString(const std::string & s);
+      
+    };
+
+
+    // --------------------------------------------------------------
+
     class python_plugin_t{
 
+      py::module mod;
+        
     public:
+
+      //constexpr static std::vector<std::string> parm_types =
+      // {"bool", "int", "float", "vector3(int)", "vector3(float)" };
 
       enum plugin_status : int{
 	plugin_status_ok                = 0,
@@ -32,46 +72,51 @@ namespace qpp {
       };
       
       std::string plug_name;
-      std::string parent_module;
       std::string module_name;
+      std::vector<std::string> module_name_decomp;
+      fs::path path;
       std::string plug_menu_name;
+      std::string description;
+  
       std::string func_call;
-      std::string func_param;
-      fs::path folder;
+      std::vector<std::shared_ptr<plugin_param_t> > params;
       
       plugin_status status{plugin_status_ok};
-      
-      python_plugin_t(const std::string & _folder,
-		      const std::string & _parent_module,
-		      const std::string & _name);
+      std::string error_msg;
+
+      python_plugin_t(const std::string & _name,
+		      const std::string & _module_name,
+		      const std::string & _path);
 
       void load_header();
       
       void load_module();
       
-      void run();
+      py::object run();
       
     };
 
-    //----------------------------------
-
+    // ----------------------------
+    
     struct plugin_tree_t;
 
-    struct plugin_tree_t{
+    struct plugin_tree_t {
+      std::string name, module_name;
+      std::vector<std::shared_ptr<plugin_tree_t> > nested;
+      std::shared_ptr<python_plugin_t> plugin {nullptr};
 
-      std::shared_ptr<python_plugin_t> plugin;
-      bool is_folder {false};
-      std::map<std::string, std::shared_ptr<plugin_tree_t> > nested;
+      plugin_tree_t(const std::string & _name);
 
-      plugin_tree_t();
+      void build_nested(std::vector<std::vector<std::string> > & list, int lvl);
 
-      void list_all(const std::string & prefix, const std::string & separ,
-		    std::vector<std::string> & list,
-		    std::vector< std::shared_ptr<python_plugin_t> > & plugins);
+      void sort();
 
+      void bind_plugins(const std::vector<std::shared_ptr<python_plugin_t> > & pluglist );
+  
+      void print(int offset=0);
     };
 
-    // ----------------------------------
+    //----------------------------------
 
     class plugin_manager_t{
 
@@ -86,24 +131,34 @@ namespace qpp {
 	plugmgr_load_error                = 5,
 	plugmgr_run_error                 = 6	
       };
-
-      //std::vector<std::string> hdr_names;
-      //std::vector<std::shared_ptr<python_plugin_t> > plugins;
-
-      std::shared_ptr<plugin_tree_t> plugins;
+  
+      std::string plugdir;
+      fs::path plug_path;
+      std::vector<std::shared_ptr<python_plugin_t> > pluglist;
+      std::shared_ptr<plugin_tree_t> plug_tree;
 
       plugmgr_status status{plugmgr_ok};
       std::string error_msg{""};
-      
-      plugin_manager_t();
-
-      void init();
-      
+      std::string error_descr{""};
+  
+      plugin_manager_t(const std::string & _plugdir);
       void locate_plugins();
-
       void load_plugins();
-      
+      void init();
     };
+
+    // ---------------------------------------------------------------------------
+    
+    template<class T>
+    std::string extract_json(json & data, const std::string & key, T & variable){
+      try {    
+	variable = data[key];
+	return "";
+      }
+      catch (json::type_error & err){
+	return err.what();
+      }
+    }
 
     
   } // namespace qpp::cad

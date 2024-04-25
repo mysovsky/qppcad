@@ -1062,5 +1062,3 @@ void workspace_manager_t::utility_event_loop() {
   if (has_been_deleted) astate->astate_evd->wss_changed();
 
 }
-
-

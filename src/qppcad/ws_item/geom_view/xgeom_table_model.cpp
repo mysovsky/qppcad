@@ -93,8 +93,11 @@ QVariant xgeom_table_model_t::headerData(int section,
 
   if (!m_gv || !m_gv->m_geom) return QVariant();
 
+  //app_state_t::get_inst() -> tlog("header: section {} role {} orient {}", section, role, orientation);
+
   if (role == Qt::DisplayRole) {
-      if (orientation == Qt::Horizontal) {
+    if (orientation == Qt::Horizontal && section <  m_gv->m_geom->nfields() ) {
+      //app_state_t::get_inst() -> tlog("---header sec: {}", section);
           std::string field_name = m_gv->m_geom->field_name(section);
           return QVariant(QString::fromStdString(field_name));
         }

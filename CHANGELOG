@@ -1,3 +1,11 @@
+24/04/25 Python plugins - browse  button for filenames and checkboxes for boolean parameters,
+	processing return values including addition of new geometries to ws.
+	Creation of arrow array from xgeometry fields.
+	Plugins for reading general xgeometry, setting ionic charges and mulpole moments calculation.
+	
+24/04/22
+	Draft version of python plugins ready.
+	The secret feature of "extended editor" now has special button on top of itemlist.
 24/04/14 fix(rotation)
 	After previous edition rotation became laggy. Fixed now.
 	

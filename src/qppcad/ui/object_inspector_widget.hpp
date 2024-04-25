@@ -33,6 +33,7 @@ namespace qpp {
 
         QPushButton *btn_add_new_ws_item;
         QPushButton *btn_refresh_oi;
+        QPushButton *btn_exteditor;
 
         //property view by ws_item type
         QWidget *none_item_placeholder;
@@ -49,7 +50,8 @@ namespace qpp {
         void ws_item_list_double_clicked(QListWidgetItem * item);
         void refresh_button_clicked();
         void add_new_ws_item_button_clicked();
-
+        void exteditor_button_clicked();
+      
         void provide_context_menu_for_ws_items(const QPoint &pos);
 
         void open_tab_requested(int tab_id);

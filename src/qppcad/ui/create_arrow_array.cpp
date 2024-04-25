@@ -33,6 +33,7 @@ create_arrow_array_widget_t::create_arrow_array_widget_t() {
       auto cur_gv = cur_item -> cast_as<geom_view_t>();
       if (cur_gv) {
 	gv_selected = true;
+	geom = cur_gv -> m_geom;
 	auto anim = cur_gv -> m_anim;
 	if (anim && anim->get_current_anim()){
 
@@ -113,16 +114,23 @@ create_arrow_array_widget_t::create_arrow_array_widget_t() {
   auto field_selector_lt = new QVBoxLayout();
 
   std::vector<QLabel*> fs_lbl = {new QLabel(tr("vx:")), new QLabel(tr("vy:")), new QLabel(tr("vz:"))};
-  std::vector<QComboBox*> fs_combo = {new QComboBox, new QComboBox, new QComboBox};
+  fs_combo = {new QComboBox, new QComboBox, new QComboBox};
+
+  std::vector<std::string> sxfields;
+  for (int i=0; i<geom->nfields(); i++)
+    if (geom -> field_type(i) == type_real)
+      ix_fields.push_back(i);
+
+  for (int i : ix_fields)
+    sxfields.push_back( t2s(i) + ". " + geom -> field_name(i) );
   
   for (int i=0; i<3; i++){
     fs_lbl[i]->setAlignment(Qt::AlignCenter);
     auto hlt  = new QHBoxLayout();
     hlt -> addWidget(fs_lbl[i],1);
     hlt -> addWidget(fs_combo[i],3);
-    fs_combo[i] -> addItem(tr("1"));
-    fs_combo[i] -> addItem(tr("2"));
-    fs_combo[i] -> addItem(tr("3"));
+    for (auto s : sxfields)
+      fs_combo[i] -> addItem(tr(s.c_str()));
     field_selector_lt -> addLayout(hlt);
   }
   
@@ -324,6 +332,14 @@ void create_arrow_array_widget_t::ok_button_clicked() {
 	}
 	astate -> log(fmt::format("frame1 = {} frame2 = {}",f1,f2));
 	aa_ap -> create_vectors_from_frames(f1,f2);
+      }
+
+      if (rb_field -> isChecked()){
+	int
+	  f1 = ix_fields[fs_combo[0] -> currentIndex()],
+	  f2 = ix_fields[fs_combo[1] -> currentIndex()],
+	  f3 = ix_fields[fs_combo[2] -> currentIndex()];
+	aa_ap -> create_vectors_from_fields(f1,f2,f3);
       }
 
       /*

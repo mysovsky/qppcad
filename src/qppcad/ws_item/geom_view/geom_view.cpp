@@ -102,6 +102,42 @@ geom_view_t::geom_view_t(): ws_item_t() {
 
 }
 
+// asm
+geom_view_t::geom_view_t(std::shared_ptr<xgeometry<float, periodic_cell<float> > > g,
+			 bool hardcoded){
+  hardcoded_xfields = hardcoded;
+  if (!hardcoded)
+    xgeom_hide = xgeom_shadow;
+
+  set_default_flags(ws_item_flags_default |
+                    ws_item_flags_support_tr |
+                    ws_item_flags_support_sel |
+                    ws_item_flags_support_cnt_edit |
+                    ws_item_flags_support_render_bb |
+                    ws_item_flags_toolbar_extension |
+                    ws_item_flags_support_actions |
+                    ws_item_flags_support_delete |
+                    ws_item_flags_support_clone |
+                    ws_item_flags_support_moveto |
+                    ws_item_flags_support_rendering |
+                    ws_item_flags_support_view_voting |
+                    ws_item_flags_cam_target_view);
+
+  m_geom = g;
+
+  m_ext_obs = std::make_unique<extents_observer_t<float> >(*m_geom);
+  m_tws_tr  = std::make_unique<tws_tree_t<float> >(*m_geom);
+  m_tws_tr->do_action(act_unlock);
+
+  m_anim = std::make_shared<geom_view_anim_subsys_t>(*this);
+  m_measure = std::make_shared<geom_view_msr_subsys_t>(*this);
+  m_labels = std::make_shared<geom_view_labels_subsys_t>(*this);
+  m_lat_planes = std::make_shared<geom_view_lat_planes_subsys_t>(*this);
+  m_selg = std::make_shared<geom_view_sel_groups_subsys_t>(*this);
+
+}
+
+
 void geom_view_t::vote_for_view_vectors(vector3<float> &out_look_pos,
                                         vector3<float> &out_look_at) {
   if (m_geom->nat() > 1) {
@@ -380,14 +416,14 @@ bool geom_view_t::mouse_click(ray_t<float> *click_ray) {
                                                        m_atom_type_to_hide,
                                                        m_atom_scale_factor,
                                                        m_sel_vis,
-                                                       xgeom_sel_vis_hide);
+                                                       xgeom_hide);
       else
         m_tws_tr->query_ray<query_ray_add_ignore_img<float> >(local_geom_ray,
                                                               res,
                                                               m_atom_type_to_hide,
                                                               m_atom_scale_factor,
                                                               m_sel_vis,
-                                                              xgeom_sel_vis_hide);
+                                                              xgeom_hide);
       recalc_gizmo_barycenter();
 
       if (!res.empty()) {
@@ -522,7 +558,7 @@ void geom_view_t::sel_atom(int atom_id, index atom_idx) {
 void geom_view_t::sel_visible() {
 
   for (size_t i = 0; i < m_geom->nat(); i++)
-    if (!m_geom->xfield<bool>(xgeom_sel_vis_hide, i))
+    if (!m_geom->xfield<bool>(xgeom_hide, i))
       sel_atom(i);
 
 }
@@ -787,7 +823,7 @@ void geom_view_t::sv_modify_selected(bool state) {
 
   for (auto &rec : m_atom_idx_sel)
     if (rec.m_idx == index::D(m_geom->DIM).all(0))
-      m_geom->xfield<bool>(xgeom_sel_vis_hide, rec.m_atm) = state;
+      m_geom->xfield<bool>(xgeom_hide, rec.m_atm) = state;
 
   if (!m_sel_vis) {
       m_sel_vis = true;
@@ -808,7 +844,7 @@ void geom_view_t::sv_hide_invert_selected() {
 
   for (size_t i = 0; i < m_geom->nat(); i++)
     if (cap_idx.find(i) == cap_idx.end())
-      m_geom->xfield<bool>(xgeom_sel_vis_hide, i) = true;
+      m_geom->xfield<bool>(xgeom_hide, i) = true;
 
   if (!m_sel_vis) {
       m_sel_vis = true;
@@ -933,6 +969,7 @@ void geom_view_t::load_color_from_static_anim() {
           m_anim->m_anim_data[static_anim].frames[0].atom_color.size() == m_geom->nat()) {
 
           for (int i = 0; i < m_geom->nat(); i++) {
+	    app_state_t::get_inst() -> tlog("suspision 23");
 
               m_geom->xfield<float>(xgeom_ccr, i) =
                   m_anim->m_anim_data[static_anim].frames[0].atom_color[i][0];
@@ -955,6 +992,9 @@ vector3<float> geom_view_t::get_xcolor(const size_t atm) {
       throw std::out_of_range("invalid atom id");
     }
 
+  if (!hardcoded_xfields)
+     throw std::out_of_range("geom_view_t::get_xcolor : no hardcoded xfields!");
+
   return vector3<float>{m_geom->xfield<float>(xgeom_ccr, atm),
                         m_geom->xfield<float>(xgeom_ccg, atm),
                         m_geom->xfield<float>(xgeom_ccb, atm)};
@@ -966,6 +1006,9 @@ void geom_view_t::set_xcolorv(const size_t atm, const vector3<float> color) {
   if (atm >= m_geom->nat()) {
       throw std::out_of_range("invalid atom id");
     }
+
+  if (!hardcoded_xfields)
+     throw std::out_of_range("geom_view_t::set_xcolorv no hardcoded xfields!");
 
   m_geom->xfield<float>(xgeom_ccr, atm) = color[0];
   m_geom->xfield<float>(xgeom_ccg, atm) = color[1];
@@ -997,6 +1040,7 @@ void geom_view_t::colorize_by_xfield(const vector3<float> color_low,
       float el_val = std::get<1>(field_min_max) - m_geom->xfield<float>(xfield_id, i);
       float len = std::get<1>(field_min_max) - std::get<0>(field_min_max);
       vector3<float> color_interp = color_low + (color_high - color_low) * (1 - el_val / len);
+      app_state_t::get_inst() -> tlog("suspision 22");
 
       m_geom->xfield<float>(xgeom_ccr, i) = color_interp[0];
       m_geom->xfield<float>(xgeom_ccg, i) = color_interp[1];
@@ -1845,8 +1889,9 @@ void geom_view_t::copy_xgeom_aux(geom_view_t *src) {
   if (!src || src->m_geom->nat() != m_geom->nat()) return;
 
   for (size_t i = 0; i < m_geom->nat(); i++) {
+    app_state_t::get_inst() -> tlog("suspision 21");
 
-      m_geom->xfield<bool>(xgeom_sel_vis_hide,i) = src->m_geom->xfield<bool>(xgeom_sel_vis_hide,i);
+      m_geom->xfield<bool>(xgeom_hide,i) = src->m_geom->xfield<bool>(xgeom_hide,i);
       m_geom->xfield<bool>(xgeom_override,i) = src->m_geom->xfield<bool>(xgeom_override,i);
       m_geom->xfield<bool>(xgeom_label_show,i) = src->m_geom->xfield<bool>(xgeom_label_show,i);
       m_geom->xfield<float>(xgeom_atom_r, i) = src->m_geom->xfield<float>(xgeom_atom_r, i);

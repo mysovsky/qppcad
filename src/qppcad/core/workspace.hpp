@@ -9,6 +9,8 @@
 #include <qppcad/ws_item/ws_item.hpp>
 #include <qppcad/core/gizmo.hpp>
 #include <qppcad/ws_item/ws_item_behaviour_manager.hpp>
+#include <geom/xgeom.hpp>
+#include <symm/groups.hpp>
 
 namespace qpp {
 
@@ -323,6 +325,18 @@ namespace qpp {
 
     };
 
+    /*
+    std::shared_ptr<ws_item_t>
+    construct_from_geom(workspace_t &ws,
+			std::shared_ptr<xgeometry<float, periodic_cell<float> > > geom,
+			const std::string &name);
+
+    std::shared_ptr<ws_item_t>
+    construct_from_array_group(workspace_t &ws,
+			       std::shared_ptr<array_group<matrix3<float> > > ag,
+			       const std::string &name);
+    */
+    
   } // namespace qpp::cad
 
 } // namespace qpp

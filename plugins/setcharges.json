@@ -1,0 +1,27 @@
+{
+    "name"       : "setcharges",
+    "file"       : "setcharges",
+    "menu name"  : "Set atomic charges",
+    "description": "Set partial atomic charges for each of atomic species.\nThis might be useful if this information somehow is not loaded from input file",
+    "function"   : "setcharges",
+    "parameters" : {
+	"geom" : {
+	    "type" : "qpp.geometry",
+	    "description" : "Target geometry",
+	    "default" : "current",	    
+	    "position" : 1
+	},
+	"species" : {
+	    "type" : "list(string)",
+	    "description" : "List of atomic species",
+	    "default" : "",
+	    "position" : 2
+	},
+	"charges" : {
+	    "type" : "list(float)",
+	    "description" : "Atomic partial charges corresponding to each of species",
+	    "default" : "",
+	    "position" : 3
+	}
+    }
+}

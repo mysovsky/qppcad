@@ -96,6 +96,17 @@ void arrow_array_view_t::create_vectors_from_frames(int f1, int f2)
 }
 
 void arrow_array_view_t::create_vectors_from_fields(int f1, int f2, int f3){
+  if (!m_binded_gv) return;  
+  if (!m_binded_gv -> m_geom) return;  
+  
+  auto geom = m_binded_gv -> m_geom;
+  m_binded_vectors = std::make_shared<geom_atom_vectors<float> >(&(*geom));
+  
+  for (size_t i = 0; i < geom -> nat(); i++) {
+    
+    m_binded_vectors -> vectors[i] =
+      vector3<float>(geom -> xfield<float>(f1,i), geom -> xfield<float>(f2,i),  geom -> xfield<float>(f3,i));
+  }
 }
 
 

@@ -58,9 +58,14 @@ namespace qpp {
 
         QLabel *type_param_name_lbl{nullptr};
         QLineEdit *type_param_name{nullptr};
+
+        std::vector<QComboBox*> fs_combo;
+        std::vector<int> ix_fields;
       
         int frame_count{0}, cur_frame{0};
         bool anim_exists{false};
+
+        std::shared_ptr<xgeometry<float, periodic_cell<float> > > geom;
       
         create_arrow_array_widget_t();
 

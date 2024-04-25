@@ -1,0 +1,21 @@
+{
+    "name"       : "multmom",
+    "file"       : "multmom",
+    "menu name"  : "Calculate multipole moments",
+    "description": "Calculate multipole moments for target geometry",
+    "function"   : "multmom",
+    "parameters" : {
+	"geom" : {
+	    "type" : "qpp.geometry",
+	    "description" : "Target geometry",
+	    "default" : "current",	    
+	    "position" : 1
+	},
+	"Lmax" : {
+	    "type" : "int",
+	    "description" : "Maximum angular momentum for multipole moments calculation",
+	    "default" : "4",
+	    "position" : 2
+	}
+    }
+}

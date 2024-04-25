@@ -72,7 +72,7 @@ namespace qpp {
       ws_mgr     = std::make_shared<workspace_manager_t>(this);
       py_mgr     = std::make_unique<python_manager_t>();
       hotkey_mgr = std::make_shared<hotkey_manager_t>();
-      plug_mgr   = std::make_unique<plugin_manager_t>();
+      //plug_mgr   = std::make_unique<plugin_manager_t>(m_plugins_dir);
 
     }
 
