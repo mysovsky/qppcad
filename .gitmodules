@@ -1,3 +1,4 @@
 [submodule "deps/qpp"]
 	path = deps/qpp
 	url = https://github.com/mysovsky/qpp.git
+	branch = master
