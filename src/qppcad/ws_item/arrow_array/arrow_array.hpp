@@ -90,7 +90,7 @@ namespace qpp {
         void create_vectors_from_fields(int f1, int f2, int f3);
       
         void render() override;
-        bool mouse_click(ray_t<float> *click_ray) override;
+        bool mouse_click(ray_t<float> *click_ray, bool pressed) override;
 
         std::string compose_type_descr() override;
         void update(float delta_time) override;

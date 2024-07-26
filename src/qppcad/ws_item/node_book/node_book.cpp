@@ -31,7 +31,7 @@ void node_book_t::render() {
   //do nothing
 }
 
-bool node_book_t::mouse_click(ray_t<float> *click_ray) {
+bool node_book_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
   return false;
 }
 

@@ -66,7 +66,7 @@ void cube_primitive_t::render() {
 
 }
 
-bool cube_primitive_t::mouse_click(ray_t<float> *click_ray) {
+bool cube_primitive_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
   return false;
 }
 

@@ -56,7 +56,8 @@ namespace qpp {
       int ifile;
 
       plugin_param_editor_t(std::shared_ptr<python_plugin_t> p);
-			     
+      std::vector<std::shared_ptr<geom_view_t> > list_ws_items();
+											     
     public slots:
 
       void ok_button_clicked();

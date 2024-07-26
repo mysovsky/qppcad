@@ -53,7 +53,7 @@ namespace qpp {
                                    vector3<float> &out_look_at) override ;
         void render() override;
         void update_joined_atoms_list_animation(size_t step_idx);
-        bool mouse_click(ray_t<float> *click_ray) override;
+        bool mouse_click(ray_t<float> *click_ray, bool pressed) override;
 
         std::string compose_type_descr() override;
         void update(float delta_time) override;

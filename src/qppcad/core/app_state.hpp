@@ -159,6 +159,8 @@ namespace qpp {
       std::string m_qppcad_root_dir;
       std::string m_plugins_dir;
       std::string m_data_dir;
+
+      bool no_selection_drop {false};
       
         QString m_last_dir;
         QString m_font_name;

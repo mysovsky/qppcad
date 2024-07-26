@@ -161,7 +161,7 @@ void arrow_array_view_t::render() {
 
 }
 
-bool arrow_array_view_t::mouse_click(ray_t<float> *click_ray) {
+bool arrow_array_view_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
   return false;
 }
 

@@ -147,8 +147,8 @@ bool consider_ws_add(py::object & obj){
   std::stringstream ss;
   py::object tp = py::eval("type");
   ss <<  py::cast<std::string>(py::str(tp(obj)));
-  auto g = py::cast<std::shared_ptr<xgeometry<float, periodic_cell<float> > > >(obj);
   if (ss.str() == "<class 'pyqpp.xgeometry_f'>"){    
+    auto g = py::cast<std::shared_ptr<xgeometry<float, periodic_cell<float> > > >(obj);
     construct_from_geom1(*(astate -> ws_mgr -> get_cur_ws()), g, g->name );
     return true;
   }
@@ -979,7 +979,7 @@ void main_window_t::dropEvent(QDropEvent *event) {
 
           QString native_path = urlList.at(i).toLocalFile();
           std::string native_path_str = native_path.toStdString();
-          astate->get_inst()->log(fmt::format("DRAG EN DROP EVENT {} {}", i, native_path_str));
+          //astate->get_inst()->log(fmt::format("DRAG EN DROP EVENT {} {}", i, native_path_str));
           astate->ws_mgr->load_from_file_autodeduce(native_path_str);
 
         }
@@ -990,9 +990,9 @@ void main_window_t::dropEvent(QDropEvent *event) {
 
 void main_window_t::resizeEvent(QResizeEvent *event) {
 
-  app_state_t::get_inst()->log(fmt::format("main_window::resizeEvent(width={}, height={})",
-                                           event->size().width(),
-                                           event->size().height()));
+  //app_state_t::get_inst()->log(fmt::format("main_window::resizeEvent(width={}, height={})",
+  //                                           event->size().width(),
+  //                                         event->size().height()));
 
   QMainWindow::resizeEvent(event);
 
@@ -1034,8 +1034,8 @@ void main_window_t::wss_changed_slot() {
 
     }
 
-  astate->log(fmt::format("main_window::workspaces_changed_slot(), total ws = {}",
-                          astate->ws_mgr->m_ws.size()));
+  //astate->log(fmt::format("main_window::workspaces_changed_slot(), total ws = {}",
+  //                          astate->ws_mgr->m_ws.size()));
 
 }
 
@@ -1046,8 +1046,8 @@ void main_window_t::ws_selector_selection_changed(int index) {
   if (astate->ws_mgr->has_wss()) {
 
       auto current = astate->ws_mgr->get_cur_id();
-      astate->log(fmt::format("ws_selector_selection_changed index: {}, ws_cur_id: {}",
-                              index, *current));
+      //astate->log(fmt::format("ws_selector_selection_changed index: {}, ws_cur_id: {}",
+      //index, *current));
       if (current) {
           astate->ws_mgr->set_cur_id(opt<size_t>(index));
           astate->make_viewport_dirty();

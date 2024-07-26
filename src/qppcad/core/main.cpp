@@ -43,8 +43,8 @@ int main (int argc, char **argv){   //, char **envp) {
 
   app_state_t *astate = app_state_t::get_inst();
 
-  astate->tlog("@GIT_REVISION={}, @BUILD_DATE={}",
-               build_info_helper::get_git_version(), build_info_helper::get_git_version());
+  //astate->tlog("@GIT_REVISION={}, @BUILD_DATE={}",
+  //             build_info_helper::get_git_version(), build_info_helper::get_git_version());
 
   astate->init_managers();
   astate->ws_mgr->init_ws_item_bhv_mgr();
@@ -60,15 +60,15 @@ int main (int argc, char **argv){   //, char **envp) {
         file_format = parser.value(target_fmt_option).toStdString();
 
       for (auto &rec : args) {
-          astate->tlog("@DEBUG: passed to load_from_file_autodeduce, path={}, ff={}",
-                       rec.toStdString(), file_format.empty() ? "NONE" : file_format);
+	//astate->tlog("@DEBUG: passed to load_from_file_autodeduce, path={}, ff={}",
+	//                       rec.toStdString(), file_format.empty() ? "NONE" : file_format);
           astate->ws_mgr->load_from_file_autodeduce(rec.toStdString(), file_format);
         }
 
     } else {
 
       if (parser.isSet(target_fmt_option)) {
-          astate->tlog("ERROR: Invalid input");
+	//astate->tlog("ERROR: Invalid input");
           return 0;
         }
 
@@ -95,7 +95,7 @@ int main (int argc, char **argv){   //, char **envp) {
 
   QString family = QFontDatabase::applicationFontFamilies(fnt_id[0]).at(0);
   astate->m_font_name = family;
-  astate->tlog("Font used : {}", astate->m_font_name.toStdString());
+  //astate->tlog("Font used : {}", astate->m_font_name.toStdString());
 
   QIcon icon("://images/icon.svg");
   app.setWindowIcon(icon);

@@ -34,7 +34,7 @@ void traj_hl_t::render() {
     }
 }
 
-bool traj_hl_t::mouse_click(ray_t<float> *click_ray) {
+bool traj_hl_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
   return false;
 }
 

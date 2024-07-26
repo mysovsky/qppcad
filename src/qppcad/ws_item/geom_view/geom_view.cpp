@@ -398,7 +398,7 @@ void geom_view_t::set_cell_within_eps(float value) {
 
 }
 
-bool geom_view_t::mouse_click(ray_t<float> *click_ray) {
+bool geom_view_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
 
   app_state_t* astate = app_state_t::get_inst();
 
@@ -426,6 +426,9 @@ bool geom_view_t::mouse_click(ray_t<float> *click_ray) {
                                                               xgeom_hide);
       recalc_gizmo_barycenter();
 
+
+      astate -> tlog("geom_view::mouse_click {}",pressed);
+      
       if (!res.empty()) {
 
           std::sort(res.begin(), res.end(), &tws_query_data_sort_by_dist<float>);
@@ -434,11 +437,16 @@ bool geom_view_t::mouse_click(ray_t<float> *click_ray) {
 
               atom_index_set_key iskey(int(res[0].m_atm), res[0].m_idx);
               auto atom_sel_it = m_atom_idx_sel.find(iskey);
-              if (atom_sel_it == m_atom_idx_sel.end())
+              if (atom_sel_it == m_atom_idx_sel.end() && pressed) {
                 sel_atom(res[0].m_atm, res[0].m_idx);
-              else
-                unsel_atom(res[0].m_atm, res[0].m_idx);
-
+		astate -> no_selection_drop = true;
+	      }
+              else if (atom_sel_it != m_atom_idx_sel.end() && !pressed) {
+		if (astate -> no_selection_drop)
+		  astate -> no_selection_drop = false;
+		else
+		  unsel_atom(res[0].m_atm, res[0].m_idx);
+	      }
             }
 
           recalc_gizmo_barycenter();
@@ -448,9 +456,12 @@ bool geom_view_t::mouse_click(ray_t<float> *click_ray) {
 
         } else {
 
-          if (m_parent_ws->m_edit_type == ws_edit_e::edit_content && m_selected ) {
+          if (m_parent_ws->m_edit_type == ws_edit_e::edit_content && m_selected && !pressed) {
+	    if (astate -> no_selection_drop)
+	      astate -> no_selection_drop = false;
+	    else
               sel_atoms(false);
-            }
+	  }
 
         }
 
@@ -471,6 +482,70 @@ void geom_view_t::mouse_double_click(ray_t<float> *ray) {
     }
 
 }
+
+void geom_view_t::move_selected_atoms(){
+  app_state_t* astate = app_state_t::get_inst();
+  if (m_parent_ws->m_edit_type == ws_edit_e::edit_content && !m_atom_idx_sel.empty() ) {
+    astate -> tlog("Selection move event");
+    float x_dt = std::clamp(astate->mouse_x - astate->mouse_x_old, -11.0f, 10.0f);
+    float y_dt = std::clamp(astate->mouse_y - astate->mouse_y_old, -11.0f, 10.0f);
+    float move_right = - camera_t::mouse_senty_transl * x_dt / camera_t::nav_div_step_translation;
+    float move_up    =   camera_t::mouse_senty_transl * y_dt / camera_t::nav_div_step_translation;
+
+        vector3<float> tr_vec =
+	  - move_right * astate -> camera -> m_right 
+	  - move_up * astate -> camera -> m_look_up;
+    translate_selected(tr_vec);
+  }
+}
+
+void geom_view_t::rotate_selected_atoms(){
+  app_state_t* astate = app_state_t::get_inst();
+  if (m_parent_ws->m_edit_type == ws_edit_e::edit_content && !m_atom_idx_sel.empty() ) {
+    //astate -> tlog("Selection rotate event");
+    auto cam = astate -> camera;
+    
+    float width   = astate->viewport_size(0);
+    float height  = astate->viewport_size(1);
+    
+    float x_scale = 1.0f;
+    float y_scale = 1.0f;
+    if (width > height) x_scale = width / (height );
+    else  y_scale = height / (width );
+
+    vector3<float> rot_center = get_gizmo_content_barycenter();
+    vector2<float> p_center = cam->project(rot_center).value();
+    float bc_x  = (p_center[0] / float(width) - 0.5f) * 2.0f;
+    float bc_y = (0.5f - p_center[1] / float(height)) * 2.0f;
+
+    float xpos =  x_scale * (astate -> mouse_x_dc_old - bc_x);
+    float ypos =  y_scale * (astate -> mouse_y_dc_old - bc_y);
+
+    float depth = cam->distance(rot_center);
+
+      float rot_angle_x = astate->mouse_y - astate->mouse_y_old;
+    float rot_angle_y = astate->mouse_x - astate->mouse_x_old;
+    rot_angle_x  *= camera_t::mouse_senty_rot/camera_t::nav_div_step_rotation;
+    rot_angle_y  *= camera_t::mouse_senty_rot/camera_t::nav_div_step_rotation;
+
+    vector3<float> rot_axis = -cam->m_right*rot_angle_x - cam->m_look_up*rot_angle_y +
+      cam->m_forward*(xpos*rot_angle_x - ypos*rot_angle_y)/depth;
+    float phi = rot_axis.norm();
+    rot_axis /= phi;
+
+    Eigen::Affine3f t;
+    Eigen::AngleAxisf rot(phi, rot_axis);
+    Eigen::Translation<float,3> tb(-rot_center);
+    Eigen::Translation<float,3> ta(rot_center);
+    t = ta * rot * tb;
+
+    matrix4<float> tm = t.matrix();
+
+    transform_sel(tm);
+    //    astate -> tlog("center proj: {} {} distance {} depth {}", xpos, ypos, ,depth);
+  }
+}
+
 
 void geom_view_t::sel_atoms(bool all) {
 

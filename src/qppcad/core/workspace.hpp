@@ -73,7 +73,7 @@ namespace qpp {
         void set_best_view();
         void render();
         void render_overlay(QPainter &painter);
-        void mouse_click(const float mouse_x, const float mouse_y);
+        void mouse_click(const float mouse_x, const float mouse_y, bool pressed);
         void mouse_double_click(const float mouse_x, const float mouse_y);
         void add_item_to_ws(const std::shared_ptr<ws_item_t> item_to_add);
 
@@ -83,6 +83,9 @@ namespace qpp {
         void update(float delta_time);
         void set_edit_type(const ws_edit_e new_edit_type);
         void copy_camera(std::shared_ptr<workspace_t> source);
+
+        void move_selected_atoms();
+        void rotate_selected_atoms();
 
         void delete_item_by_index(size_t idx);
 
@@ -124,7 +127,7 @@ namespace qpp {
         void init_default();
         void render_cur_ws();
         void render_cur_ws_overlay(QPainter &painter);
-        void mouse_click();
+        void mouse_click( bool pressed );
         void mouse_double_click();
         void ws_mgr_changed();
         void add_ws(const std::shared_ptr<workspace_t> &ws_to_add);
@@ -150,7 +153,10 @@ namespace qpp {
 
         void utility_event_loop();
 
-        /**
+        void move_selected_atoms();
+        void rotate_selected_atoms();
+
+      /**
          * @brief get_sel_tuple
          * @param _error_context
          * @return

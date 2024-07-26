@@ -42,15 +42,25 @@ bool plugin_param_t::fromString(const std::string & s){
   app_state_t *astate = app_state_t::get_inst();
   switch (type){
   case type_qpp_geometry: {
+    try{
+      auto g = std::get<std::shared_ptr<xgeometry<float, periodic_cell<float> > > >(value);
+      astate -> tlog("geometry {} {}",g->name, g->nat());
+    }
+    catch (const std::bad_variant_access& ex){
+      astate -> tlog("value error {}",ex.what());
+      return false;
+    }
+    /*
     if (s == "current"){
       auto [cur_ws, cur_it, gv] = astate -> ws_mgr -> get_sel_tpl_itm<geom_view_t>();
       if (!gv)return false;
       auto g = gv -> m_geom;
-      astate -> tlog("nat: {}", g -> nat() );
+      //astate -> tlog("nat: {}", g -> nat() );
       value = g;
     }
     else
       return false;
+    */
     return true;
     break;
   }
@@ -173,7 +183,7 @@ void python_plugin_t::load_header(){
   //"\n--- parameters:\n";
   description = description + "\nDesription of parameters:\n";
 
-  astate -> tlog("name= {} menu name= {} function= {}\n parameters:\n", plug_name, plug_menu_name, func_call);
+  //astate -> tlog("name= {} menu name= {} function= {}\n parameters:\n", plug_name, plug_menu_name, func_call);
   try {
     for (json::iterator it = jparams.begin(); it != jparams.end(); ++it){    
       basic_types t;
@@ -192,7 +202,7 @@ void python_plugin_t::load_header(){
       if ( p -> type != type_string)
 	p -> browse = "";
 
-      astate -> tlog("param name= {} type= {} default= {}", p->name, p->type, p->default_sval);
+      //astate -> tlog("param name= {} type= {} default= {}", p->name, p->type, p->default_sval);
       
       params.push_back(p);
       description = description + "     " + p -> name + "\n" + p -> description + "\n";
@@ -409,5 +419,5 @@ void plugin_manager_t::init(){
     load_plugins();
   
   app_state_t *astate = app_state_t::get_inst();
-  astate -> tlog("plugins dir: ", plugdir );
+  //astate -> tlog("plugins dir: ", plugdir );
 }

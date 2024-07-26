@@ -14,7 +14,7 @@
 #include <io/geomio.hpp>
 #include <io/vasp_io.hpp>
 #include <io/cp2k.hpp>
-#include <io/xyz_multiframe.hpp>
+//#include <io/xyz_multiframe.hpp>
 #include <io/cube.hpp>
 
 namespace qpp {

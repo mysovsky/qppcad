@@ -187,7 +187,7 @@ void ws_viewer_widget_t::mousePressEvent(QMouseEvent *event) {
 
       if (event->button() == Qt::LeftButton)  {
           astate->mouse_lb_pressed = true;
-          astate->ws_mgr->mouse_click();
+          astate->ws_mgr->mouse_click(true);
           astate->mouse_distance_pp = 0.0f;
         }
 
@@ -211,6 +211,7 @@ void ws_viewer_widget_t::mouseReleaseEvent(QMouseEvent *event) {
 
       if (event->button() == Qt::LeftButton) {
           astate->mouse_lb_pressed = false;
+          astate->ws_mgr->mouse_click(false);
           need_to_cancel_cam_transform = true;
         }
 
@@ -261,10 +262,23 @@ void ws_viewer_widget_t::mouseMoveEvent(QMouseEvent *event) {
           astate->mouse_distance_pp = 0;
         }
 
+      Qt::KeyboardModifiers kb_mod = QApplication::keyboardModifiers();
+
+      if (astate->camera && astate->mouse_lb_pressed && (kb_mod & Qt::ControlModifier)) {
+	astate -> no_selection_drop = true;
+	astate -> ws_mgr -> move_selected_atoms();
+	//astate->camera->m_rotate_camera = true;
+	// astate->make_viewport_dirty();
+      }
+
       if (astate->camera && astate->mouse_rb_pressed) {
-          astate->camera->m_rotate_camera = true;
-          astate->make_viewport_dirty();
-        }
+	if (kb_mod & Qt::ControlModifier)
+	  astate -> ws_mgr -> rotate_selected_atoms();
+	else {
+	  astate->camera->m_rotate_camera = true;
+	  astate->make_viewport_dirty();
+	}
+      }
 
       if (astate->camera && astate->mouse_md_pressed) {
           astate->camera->m_move_camera = true;
@@ -277,7 +291,6 @@ void ws_viewer_widget_t::mouseMoveEvent(QMouseEvent *event) {
           astate->camera->m_rotate_over = false;
         }
 
-      Qt::KeyboardModifiers kb_mod = QApplication::keyboardModifiers();
       if (astate->camera) {
           astate->camera->m_rotate_over =
               astate->camera->m_rotate_camera && (kb_mod & Qt::ControlModifier);

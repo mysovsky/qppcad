@@ -31,8 +31,8 @@ void ws_item_behaviour_manager_t::load_fixtures_from_path(
           auto fxt_manifest_fn = QString("%1/%2").arg(fxt_dir).arg("manifest.json");
           QFileInfo check_file(fxt_manifest_fn);
 
-          astate->tlog("Loading fixture from path {}, manifest path = {}",
-                       fxt_dir.toStdString(), fxt_manifest_fn.toStdString());
+          //astate->tlog("Loading fixture from path {}, manifest path = {}",
+	  //            fxt_dir.toStdString(), fxt_manifest_fn.toStdString());
 
           if (check_file.exists() && check_file.isFile()) {
 
@@ -42,11 +42,11 @@ void ws_item_behaviour_manager_t::load_fixtures_from_path(
               if (new_fxt.m_initialized) {
 
                   size_t fixture_hash = astate->hash_reg->calc_hash(new_fxt.m_fxt_name);
-                  astate->tlog("Fixture \"{}\" loaded!", new_fxt.m_fxt_name);
+                  //astate->tlog("Fixture \"{}\" loaded!", new_fxt.m_fxt_name);
                   m_fixtures_info.insert({fixture_hash, std::move(new_fxt)});
 
                 } else {
-                  astate->tlog("Cannot load fixture!");
+		//astate->tlog("Cannot load fixture!");
                 }
 
             }
@@ -66,7 +66,7 @@ std::shared_ptr<ws_item_t> ws_item_behaviour_manager_t::load_ws_itm_from_file(
 
   std::setlocale(LC_ALL, "C");
 
-  astate->tlog("Loading ws_item from file {}", file_name);
+  //astate->tlog("Loading ws_item from file {}", file_name);
 
   auto new_ws_item = fbr_ws_item_by_type(m_ws_item_io[io_bhv_idx]->m_accepted_type);
   new_ws_item->m_genesis_file_name = file_name;
@@ -121,8 +121,8 @@ bool ws_item_behaviour_manager_t::save_ws_itm_to_file(std::string &file_name,
 
   if (bhv_id < m_ws_item_io.size() && m_ws_item_io[bhv_id]->can_save() &&
       m_ws_item_io[bhv_id]->m_accepted_type == ws_item->get_type()) {
-      astate->tlog("Saving ws_item[{}] to file {} from workspace {}",
-                   ws_item->m_name, file_name, ws_item->m_parent_ws->m_ws_name);
+    //astate->tlog("Saving ws_item[{}] to file {} from workspace {}",
+    //              ws_item->m_name, file_name, ws_item->m_parent_ws->m_ws_name);
 
       bool check = m_ws_item_io[bhv_id]->check_before_save(ws_item.get(), message);
       if (check) {
@@ -133,8 +133,8 @@ bool ws_item_behaviour_manager_t::save_ws_itm_to_file(std::string &file_name,
 
         } else {
 
-          astate->tlog("Checking failed for ws_item={}, file={}, workspace={}",
-                       ws_item->m_name, file_name, ws_item->m_parent_ws->m_ws_name);
+	//astate->tlog("Checking failed for ws_item={}, file={}, workspace={}",
+        //               ws_item->m_name, file_name, ws_item->m_parent_ws->m_ws_name);
           return false;
 
         }
@@ -188,8 +188,8 @@ size_t ws_item_behaviour_manager_t::reg_ff(std::string _full_name,
 
     }
 
-  astate->tlog("Registering file format {}[{}] - hash {}, ghash {}",
-               _full_name, _short_name, _ff_hash, _file_format_group_hash);
+  //astate->tlog("Registering file format {}[{}] - hash {}, ghash {}",
+  //             _full_name, _short_name, _ff_hash, _file_format_group_hash);
 
   return _ff_hash;
 
@@ -212,8 +212,8 @@ size_t ws_item_behaviour_manager_t::reg_ffg(std::string _full_name, std::string 
 
     }
 
-  astate->tlog("Registering file format group {}[{}] - hash {}",
-               _full_name, _short_name, _file_format_group_hash);
+  //astate->tlog("Registering file format group {}[{}] - hash {}",
+  //             _full_name, _short_name, _file_format_group_hash);
 
   return _file_format_group_hash;
 
@@ -332,8 +332,8 @@ std::optional<size_t> ws_item_behaviour_manager_t::get_ff_by_finger_print(
       if (file_name.find(ffp) != std::string::npos) {
 
           app_state_t *astate = app_state_t::get_inst();
-          astate->tlog("Compare ff {} {} - fname {}",
-                       elem.first, elem.second.m_full_name, file_name);
+          //astate->tlog("Compare ff {} {} - fname {}",
+          //             elem.first, elem.second.m_full_name, file_name);
           return std::optional<size_t>(elem.first);
 
         }
@@ -361,7 +361,7 @@ std::optional<size_t> ws_item_behaviour_manager_t::get_io_bhv_by_file_format(siz
     if (m_ws_item_io[i]->m_accepted_file_format == file_format) {
 
         app_state_t *astate = app_state_t::get_inst();
-        astate->tlog("Compare ff {} - io_bhv {}",file_format, i);
+        //astate->tlog("Compare ff {} - io_bhv {}",file_format, i);
         return std::optional<size_t>(i);
 
       }
@@ -391,12 +391,13 @@ void ws_item_behaviour_manager_t::reg_io_bhv(
   io_bhv_inst->m_accepted_type = accepted_type;
   io_bhv_inst->m_accepted_file_format = accepted_file_format;
 
+  /*
   astate->tlog("Registering io behaviour for type {}, file format[{}], save[{}], load[{}]",
                accepted_type,
                get_ff_full_name(accepted_file_format),
                io_bhv_inst->can_save(),
                io_bhv_inst->can_load());
-
+  */
   m_ws_item_io.push_back(io_bhv_inst);
 
 }
@@ -461,11 +462,11 @@ std::shared_ptr<ws_item_obj_insp_widget_t> ws_item_behaviour_manager_t::get_obj_
 
   app_state_t *astate = app_state_t::get_inst();
 
-  astate->tlog("get_obj_insp_widget_sp with type_id = {}, query?", hash);
+  //astate->tlog("get_obj_insp_widget_sp with type_id = {}, query?", hash);
 
   auto it = m_obj_insp_widgets.find(hash);
   if (it != m_obj_insp_widgets.end() && it->second != nullptr) {
-      astate->tlog("get_obj_insp_widget_sp with type_id = {}, exists", hash);
+    //astate->tlog("get_obj_insp_widget_sp with type_id = {}, exists", hash);
       return it->second;
     }
 
@@ -473,7 +474,7 @@ std::shared_ptr<ws_item_obj_insp_widget_t> ws_item_behaviour_manager_t::get_obj_
       auto it_f = m_obj_insp_fabric.find(hash);
       if (it_f != m_obj_insp_fabric.end()) {
 
-          astate->tlog("get_obj_insp_widget_sp with type_id = {}, constructing", hash);
+	//astate->tlog("get_obj_insp_widget_sp with type_id = {}, constructing", hash);
           auto cnstr = it_f->second();
           m_obj_insp_widgets.emplace(hash, cnstr);
           return cnstr;
@@ -484,7 +485,7 @@ std::shared_ptr<ws_item_obj_insp_widget_t> ws_item_behaviour_manager_t::get_obj_
         }
     }
 
-  astate->tlog("get_obj_insp_widget_sp with type_id = {}, not found", hash);
+  //astate->tlog("get_obj_insp_widget_sp with type_id = {}, not found", hash);
 
   return nullptr;
 
@@ -501,21 +502,21 @@ std::shared_ptr<ws_item_extended_editor_t> ws_item_behaviour_manager_t::get_ext_
 
   app_state_t *astate = app_state_t::get_inst();
 
-  astate->tlog("get_ext_editor_widget_sp with type_id = {}, query?", hash);
+  //astate->tlog("get_ext_editor_widget_sp with type_id = {}, query?", hash);
 
   auto it = m_ext_editors_info.find({hash, ed_order});
   if (it != m_ext_editors_info.end()) {
 
       if (it->second.m_inst) {
-          astate->tlog("get_ext_editor_widget_sp with type_id = {}, exists", hash);
+	//astate->tlog("get_ext_editor_widget_sp with type_id = {}, exists", hash);
         } else {
-          astate->tlog("get_ext_editor_widget_sp with type_id = {}, constr.", hash);
+	//astate->tlog("get_ext_editor_widget_sp with type_id = {}, constr.", hash);
            it->second.m_inst = it->second.m_fabric();
         }
       return it->second.m_inst;
     }
 
-  astate->tlog("get_ext_editor_widget_sp with type_id = {}, not found", hash);
+  //astate->tlog("get_ext_editor_widget_sp with type_id = {}, not found", hash);
 
   return nullptr;
 
@@ -525,12 +526,12 @@ std::shared_ptr<ws_item_t> ws_item_behaviour_manager_t::fbr_ws_item_by_type(size
 
   app_state_t *astate = app_state_t::get_inst();
 
-  astate->tlog("Fabric new ws_item with type_id = {}", type_id);
+  //astate->tlog("Fabric new ws_item with type_id = {}", type_id);
 
   auto it = m_fabric_ws_item.find(type_id);
   if (it != m_fabric_ws_item.end()) return it->second();
 
-  astate->tlog("Cannot fabric new ws_item with type_id = {}!", type_id);
+  //astate->tlog("Cannot fabric new ws_item with type_id = {}!", type_id);
   return nullptr;
 
 }

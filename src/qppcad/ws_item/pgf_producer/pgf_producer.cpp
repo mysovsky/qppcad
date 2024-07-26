@@ -23,7 +23,7 @@ void pgf_producer_t::render() {
  //do nothing
 }
 
-bool pgf_producer_t::mouse_click(ray_t<float> *click_ray) {
+bool pgf_producer_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
   return false;
 }
 

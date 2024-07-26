@@ -207,8 +207,12 @@ namespace qpp {
         void rebond();
         void set_cell_within_eps(float value);
 
-        bool mouse_click(ray_t<float> *click_ray) override;
+        bool mouse_click(ray_t<float> *click_ray, bool pressed) override;
         void mouse_double_click(ray_t<float> *ray) override;
+
+        void move_selected_atoms();
+        void rotate_selected_atoms();
+      
         /**
          * @brief sel_atoms
          * @param all

@@ -33,8 +33,8 @@ qpp::cad::shader_program_t::shader_program_t(const std::string &_program_name,
   glapi->glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &vs_proc_res);
   glapi->glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &fs_proc_res);
 
-  astate->tlog("Program[{}] vs_sh_stat = {}, fs_sh_stat = {}",
-               program_name, vs_proc_res, fs_proc_res);
+  //astate->tlog("Program[{}] vs_sh_stat = {}, fs_sh_stat = {}",
+  //             program_name, vs_proc_res, fs_proc_res);
 
   glapi->glAttachShader(program_id, vertexShaderID);
   glapi->glAttachShader(program_id, fragmentShaderID);
@@ -46,13 +46,13 @@ qpp::cad::shader_program_t::shader_program_t(const std::string &_program_name,
   glapi->glGetProgramiv(program_id, GL_LINK_STATUS, &proc_res);
   glapi->glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-  astate->tlog("Shader program[{}] compilation status: {}", program_name, proc_res);
+  //astate->tlog("Shader program[{}] compilation status: {}", program_name, proc_res);
 
   if (infoLogLength > 0) {
       std::vector<char> ProgramErrorMessage(infoLogLength+1);
       glapi->glGetProgramInfoLog(program_id, infoLogLength, nullptr, &ProgramErrorMessage[0]);
       std::string str(ProgramErrorMessage.begin(), ProgramErrorMessage.end());
-      astate->tlog("Shader/Program compilation/linking failed: {}", str);
+      //astate->tlog("Shader/Program compilation/linking failed: {}", str);
     }
 
   glapi->glDeleteShader(vertexShaderID);
@@ -68,7 +68,7 @@ void qpp::cad::shader_program_t::u_on(qpp::cad::sp_u_name _val) {
   unf_rec[_val].h_prog = glapi->glGetUniformLocation(program_id, map_u2s[_val].c_str());
 
   if (unf_rec[_val].h_prog == -1) {
-      astate->tlog("WARNING: invalid uniform[{}] in program {}", map_u2s[_val], program_name);
+    //astate->tlog("WARNING: invalid uniform[{}] in program {}", map_u2s[_val], program_name);
     }
 }
 

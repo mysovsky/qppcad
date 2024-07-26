@@ -38,7 +38,7 @@ void arrow_primitive_t::render() {
 
 }
 
-bool arrow_primitive_t::mouse_click(ray_t<float> *click_ray) {
+bool arrow_primitive_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
   return false;
 }
 

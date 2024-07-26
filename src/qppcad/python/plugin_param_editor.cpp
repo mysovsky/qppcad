@@ -151,6 +151,17 @@ void plugin_param_model_t::unbind(){
   plugin = nullptr;
 }
 
+std::vector<std::shared_ptr<geom_view_t> > plugin_param_editor_t::list_ws_items(){
+  app_state_t *astate = app_state_t::get_inst();
+  auto cur_ws = astate -> ws_mgr ->  get_cur_ws();
+  std::vector<std::shared_ptr<geom_view_t> > list;
+  for (auto it : cur_ws -> m_ws_items){
+    auto gv = std::static_pointer_cast<geom_view_t>(it);
+    if (!gv || !gv->m_geom) continue;
+    list.push_back(gv);
+  }
+  return list;
+}
 
 plugin_param_editor_t::plugin_param_editor_t(std::shared_ptr<python_plugin_t> p){
 
@@ -188,6 +199,26 @@ plugin_param_editor_t::plugin_param_editor_t(std::shared_ptr<python_plugin_t> p)
   param_tbl->horizontalHeader()->setStretchLastSection(true);
   //param_tbl->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+  for (int i=0; i < plugin -> params.size(); i++)
+    if (plugin -> params[i] -> type == type_qpp_geometry){
+
+      auto cmb_itm = new QComboBox;
+      auto geoms = list_ws_items();
+      for (auto g:geoms)
+	cmb_itm -> addItem(tr(g->m_name.c_str()));
+      QObject::connect( cmb_itm,
+			static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+			[this, i, geoms](int idx){
+			  this -> plugin -> params[i] -> value = geoms[idx] -> m_geom;
+			  //astate -> tlog("plug param edit combo : {}",
+			  //		 std::get<std::shared_ptr<xgeometry<float, periodic_cell<float> > > >(this -> plugin -> params[i] -> value) -> nat());
+			});
+      plugin -> params[i] -> value = geoms[0] -> m_geom;
+      
+      auto I = param_mdl -> index(i,2);
+      param_tbl -> setIndexWidget(I, cmb_itm);
+    }
+  
   ifile = -1;
   for (int ii = 0; ii < plugin -> params.size(); ii++)
     if (plugin -> params[ii] -> browse != ""){

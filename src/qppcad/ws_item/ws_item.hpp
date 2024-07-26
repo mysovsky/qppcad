@@ -185,7 +185,7 @@ namespace qpp {
         virtual void render_overlay(QPainter &painter);
 
         virtual size_t get_content_count() = 0;
-        virtual bool mouse_click(ray_t<float> *ray) = 0;
+        virtual bool mouse_click(ray_t<float> *ray, bool pressed) = 0;
         virtual void mouse_double_click(ray_t<float> *ray);
 
         void set_default_flags(uint32_t);

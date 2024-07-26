@@ -181,7 +181,7 @@ void object_inspector_widget_t::cur_ws_changed() {
 
   app_state_t* astate = app_state_t::get_inst();
 
-  astate->log("DEBUG: object_inspector_widget_t::cur_ws_changed");
+  //astate->log("DEBUG: object_inspector_widget_t::cur_ws_changed");
 
   ws_items_list->blockSignals(true);
 
@@ -204,7 +204,7 @@ void object_inspector_widget_t::cur_ws_selected_item_changed() {
 
   app_state_t* astate = app_state_t::get_inst();
 
-  astate->log("DEBUG: obj_insp_widget_t::cur_ws_selected_item_changed");
+  //astate->log("DEBUG: obj_insp_widget_t::cur_ws_selected_item_changed");
 
   ws_items_list->blockSignals(true);
 
@@ -212,8 +212,8 @@ void object_inspector_widget_t::cur_ws_selected_item_changed() {
 
   if (cur_ws) {
 
-      astate->log(fmt::format("DEBUG ::cur_ws_selected_item_changed(), "
-                              "[num_wsi = {}]", cur_ws->m_ws_items.size()));
+    //astate->log(fmt::format("DEBUG ::cur_ws_selected_item_changed(), "
+    //                        "[num_wsi = {}]", cur_ws->m_ws_items.size()));
 
       auto cur_id = cur_ws->get_selected_idx();
 
@@ -235,7 +235,7 @@ void object_inspector_widget_t::ui_cur_ws_selected_item_changed() {
 
   app_state_t* astate = app_state_t::get_inst();
 
-  astate->log("DEBUG: ui_cur_ws_selected_item_changed");
+  //astate->log("DEBUG: ui_cur_ws_selected_item_changed");
 
   auto [ok, cur_ws] = astate->ws_mgr->get_sel_tuple_ws(error_ctx_ignore);
 
@@ -346,7 +346,7 @@ void object_inspector_widget_t::open_tab_requested(int tab_id) {
 
   app_state_t* astate = app_state_t::get_inst();
 
-  astate->tlog("@DEBUG: enter object_inspector_widget_t::open_tab_requested(tab_id={})", tab_id);
+  //astate->tlog("@DEBUG: enter object_inspector_widget_t::open_tab_requested(tab_id={})", tab_id);
 
   if (!m_cur_obj_insp_widget) return;
 
@@ -356,6 +356,6 @@ void object_inspector_widget_t::open_tab_requested(int tab_id) {
 
   m_cur_obj_insp_widget->setCurrentIndex(tab_id);
 
-  astate->tlog("@DEBUG: exit object_inspector_widget_t::open_tab_requested(tab_id={})", tab_id);
+  //astate->tlog("@DEBUG: exit object_inspector_widget_t::open_tab_requested(tab_id={})", tab_id);
 
 }

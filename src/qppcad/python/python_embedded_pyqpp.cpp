@@ -6,7 +6,7 @@
 
 #include <qppcad/core/app_state.hpp>
 #include <qppcad/ws_item/geom_view/geom_view.hpp>
-#include <qpp/modules/pyqpp/pyqpp.hpp>
+#include <qpp/src/modules/pyqpp/pyqpp.hpp>
 
 using namespace qpp;
 using namespace qpp::cad;

@@ -122,6 +122,8 @@ void geom_view_anim_subsys_t::update_and_set_anim(const int anim_id,
 
 void geom_view_anim_subsys_t::update_geom_to_anim() {
 
+  app_state_t* astate = app_state_t::get_inst();
+  astate -> tlog("update_geom_to_anim {} {}",m_cur_anim, m_cur_anim_time);
   update_geom_to_anim(m_cur_anim, m_cur_anim_time);
 
 }

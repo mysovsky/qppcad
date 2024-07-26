@@ -109,7 +109,7 @@ void volume_view_t::render() {
 
 }
 
-bool volume_view_t::mouse_click(ray_t<float> *click_ray) {
+bool volume_view_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
   return false;
 }
 

@@ -19,7 +19,7 @@ void compl_list_view_t::render() {
  //do nothing
 }
 
-bool compl_list_view_t::mouse_click(ray_t<float> *click_ray) {
+bool compl_list_view_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
   return false;
 }
 

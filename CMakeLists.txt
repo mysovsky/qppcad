@@ -35,7 +35,7 @@ add_subdirectory(deps/qpp)
 
 include_directories(src/)
 include_directories(data/)
-include_directories(deps/qpp/modules)
+include_directories(deps/qpp/src/modules)
 include_directories(deps/qpp/deps/pybind11/include)
 include_directories(deps/qpp/deps/fmtlib/include)
 include_directories(deps/qpp/deps/pugixml/src)
@@ -164,16 +164,16 @@ add_executable(
     src/qppcad/sflow/sflow_parameter.cpp
     src/qppcad/sflow/sflow_parameter_ws_item.cpp
 
-    deps/qpp/modules/pyqpp/pyqpp_linalg.cpp
-    deps/qpp/modules/pyqpp/pyqpp_geom.cpp
-    deps/qpp/modules/pyqpp/pyqpp_xgeom.cpp
-    deps/qpp/modules/pyqpp/pyqpp_cell.cpp
-    deps/qpp/modules/pyqpp/pyqpp_autosymm.cpp
-    deps/qpp/modules/pyqpp/pyqpp_builders.cpp
-    deps/qpp/modules/pyqpp/pyqpp_ccd.cpp
-    deps/qpp/modules/pyqpp/pyqpp_opaque_types.cpp
-    deps/qpp/modules/pyqpp/pyqpp_neighbours.cpp
-    deps/qpp/modules/data/errors.cpp
+    deps/qpp/src/modules/pyqpp/pyqpp_linalg.cpp
+    deps/qpp/src/modules/pyqpp/pyqpp_geom.cpp
+    deps/qpp/src/modules/pyqpp/pyqpp_xgeom.cpp
+    deps/qpp/src/modules/pyqpp/pyqpp_cell.cpp
+    deps/qpp/src/modules/pyqpp/pyqpp_autosymm.cpp
+    deps/qpp/src/modules/pyqpp/pyqpp_builders.cpp
+    deps/qpp/src/modules/pyqpp/pyqpp_ccd.cpp
+    deps/qpp/src/modules/pyqpp/pyqpp_opaque_types.cpp
+    deps/qpp/src/modules/pyqpp/pyqpp_neighbours.cpp
+    deps/qpp/src/modules/data/errors.cpp
 
     ${SRC_RENDER}
     ${SRC_WS_ITEM}
@@ -212,6 +212,10 @@ else()
     util
     m)
 endif()
+
+install(TARGETS qppcad DESTINATION ${CMAKE_INSTALL_PREFIX}/qppcad/bin )
+install(DIRECTORY data DESTINATION  ${CMAKE_INSTALL_PREFIX}/qppcad )
+install(DIRECTORY plugins DESTINATION  ${CMAKE_INSTALL_PREFIX}/qppcad )
 
 target_compile_definitions(qppcad PUBLIC -DQPPCAD_PY_EXPORT -DEXTENDED_SFLOW)
 

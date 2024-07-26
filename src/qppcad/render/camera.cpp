@@ -189,7 +189,7 @@ void camera_t::update_camera () {
     float phi = ax.norm();
     ax /= phi;
 
-    bool ctrl_pressed = QApplication::keyboardModifiers() && Qt::ControlModifier;
+    bool ctrl_pressed = QApplication::keyboardModifiers() & Qt::ShiftModifier;
     if (ctrl_pressed)
       rotate_camera_around_axis(rot_angle_y, m_forward);
     else

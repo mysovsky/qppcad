@@ -302,7 +302,7 @@ namespace qpp {
       else 
 	m_data_dir = fs::absolute(fs::path(m_qppcad_root_dir)/"data").string();
 
-      tlog("ROOT DIR: {}\n PLUGINS DIR: {}\n DATA DIR: {}\n",m_qppcad_root_dir, m_plugins_dir, m_data_dir );
+      //tlog("ROOT DIR: {}\n PLUGINS DIR: {}\n DATA DIR: {}\n",m_qppcad_root_dir, m_plugins_dir, m_data_dir );
 
     }
 
@@ -445,7 +445,7 @@ namespace qpp {
 
       QFileInfo file_info(QString::fromStdString(file_name));
       m_last_dir =  file_info.absoluteDir().path();
-      tlog("M_LAST_DIR= {}", m_last_dir.toStdString());
+      //tlog("M_LAST_DIR= {}", m_last_dir.toStdString());
 
       if (m_recent_files.size() >= max_recent_files)
         m_recent_files.erase(m_recent_files.begin(),
@@ -485,10 +485,10 @@ namespace qpp {
         }
 
       if (!m_fixtures_dir_is_set) {
-          tlog("Fixture dir is not set!");
+	//tlog("Fixture dir is not set!");
           return;
         } else {
-          tlog("Fixtures dir size = {}", m_fixtures_dirs.size());
+	//tlog("Fixtures dir size = {}", m_fixtures_dirs.size());
           ws_mgr->m_bhv_mgr->load_fixtures_from_path(m_fixtures_dirs);
         }
 

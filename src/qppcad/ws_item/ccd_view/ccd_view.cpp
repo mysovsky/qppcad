@@ -184,7 +184,7 @@ void ccd_view_t::update_joined_atoms_list_animation(size_t step_idx) {
 }
 
 
-bool ccd_view_t::mouse_click(ray_t<float> *click_ray) {
+bool ccd_view_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
   return false;
 }
 

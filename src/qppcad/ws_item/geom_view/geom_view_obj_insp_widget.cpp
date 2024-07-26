@@ -5,9 +5,8 @@
 #include <qppcad/ws_item/geom_view/geom_view_measurement_subsys.hpp>
 #include <qppcad/ws_item/geom_view/geom_view_type_summary_popup.hpp>
 #include <qppcad/ws_item/geom_view/geom_view_tools.hpp>
-
 #include <qppcad/ws_item/geom_view/qbonding_table_model.hpp>
-#include <qppcad/ws_item/geom_view/qtype_summary_model.hpp>
+//#include <qppcad/ws_item/geom_view/qtype_summary_model.hpp>
 #include <qppcad/ws_item/geom_view/qtype_specific_rendering_model.hpp>
 #include <qppcad/ws_item/geom_view/qmeasurements_table_model.hpp>
 #include <qppcad/ws_item/geom_view/xgeom_fields_model.hpp>
@@ -1096,7 +1095,7 @@ qrealspinidx::qrealspinidx(int _i, int _j, QWidget *parent): QDoubleSpinBox(pare
 void qrealspinidx::valueChangedEmit(double d)
 {
   app_state_t *astate = app_state_t::get_inst();
-  astate -> log(fmt::format("Value Changed Emit {} {} {}\n",i,j,d));
+  //astate -> log(fmt::format("Value Changed Emit {} {} {}\n",i,j,d));
   valueChanged_ij(i,j,d);
 }
   
@@ -1708,7 +1707,7 @@ void geom_view_obj_insp_widget_t::update_modify_tab() {
                         std::inserter(atoms_id_to_bind, atoms_id_to_bind.begin()),
                         [](auto &sel_rec){return sel_rec.m_atm;}
                   );
-		  app_state_t::get_inst() -> tlog("suspision 15");
+		  //app_state_t::get_inst() -> tlog("suspision 15");
 
                   tm_gb_override_atom->show();
                   tm_override_atom_color->bind_value(b_al->m_geom.get(),
@@ -1914,7 +1913,7 @@ void geom_view_obj_insp_widget_t::update_select_tab() {
 
       if (b_al->m_parent_ws &&
           b_al->m_parent_ws->m_edit_type == ws_edit_e::edit_content) {
-          set_tab_enabled(tab_select, false);
+          set_tab_enabled(tab_select, true);
         } else {
           set_tab_enabled(tab_select, false);
         }
@@ -2649,7 +2648,7 @@ void geom_view_obj_insp_widget_t::type_summary_clicked(const QModelIndex &index)
     }
   else if (atom_type_idx < b_al->m_geom->n_types() && col_idx == 2) {
     auto dsb = (QDoubleSpinBox*)(tg_type_summary_tbl -> item(col_idx,atom_type_idx));
-    astate -> log(fmt::format("radius clicked {} {} {}",col_idx,atom_type_idx, dsb->value()));
+    //astate -> log(fmt::format("radius clicked {} {} {}",col_idx,atom_type_idx, dsb->value()));
   }
 
 }
@@ -2673,7 +2672,7 @@ void geom_view_obj_insp_widget_t::clear_color_override_button_clicked() {
 
 void geom_view_obj_insp_widget_t::atomic_radius_modified(int i, int j, double d) {
   app_state_t *astate = app_state_t::get_inst();
-  astate -> log(fmt::format("Atomic radius modified  {} {}\n",j,d));
+  //astate -> log(fmt::format("Atomic radius modified  {} {}\n",j,d));
 
   if (!b_al) return;
 

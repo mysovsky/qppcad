@@ -174,7 +174,7 @@ void psg_view_t::render() {
 
 }
 
-bool psg_view_t::mouse_click(ray_t<float> *click_ray) {
+bool psg_view_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
   return false;
 }
 

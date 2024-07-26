@@ -64,7 +64,7 @@ namespace qpp {
         void vote_for_view_vectors(vector3<float> &v_out_look_pos,
                                    vector3<float> &v_out_look_at) override ;
         void render() override;
-        bool mouse_click(ray_t<float> *click_ray) override;
+        bool mouse_click(ray_t<float> *click_ray, bool pressed) override;
 
         std::string compose_type_descr() override;
         void update(float delta_time) override;

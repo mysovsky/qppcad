@@ -17,7 +17,7 @@ void py_note_book_t::render() {
  //do nothing
 }
 
-bool py_note_book_t::mouse_click(ray_t<float> *click_ray) {
+bool py_note_book_t::mouse_click(ray_t<float> *click_ray, bool pressed) {
   return false;
 }
 
