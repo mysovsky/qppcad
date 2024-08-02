@@ -157,7 +157,7 @@ void simple_query::sel_cnt_parity() {
 
   auto [cur_ws, cur_it, al] = astate->ws_mgr->get_sel_tpl_itm<geom_view_t>(error_ctx_throw);
 
-  index zero = index::D(al->m_geom->DIM).all(0);
+  index zero = index::D(al->m_geom->DIM()).all(0);
   for (auto &elem : al->m_atom_idx_sel)
     if (elem.m_idx == zero) {
         std::array<int, 2> parity_d{-1,1};
@@ -233,7 +233,7 @@ void simple_query::sel_cnt_sphere(vector3<float> sph_center, float sph_rad) {
   al->m_tws_tr->query_sphere(sph_rad, sph_center, cnt);
 
   for (auto &item : cnt)
-    if (item.m_idx == index::D(al->m_geom->DIM).all(0))
+    if (item.m_idx == index::D(al->m_geom->DIM()).all(0))
       al->sel_atom(item.m_atm);
 
   astate->make_viewport_dirty();
@@ -351,7 +351,7 @@ pybind11::list simple_query::get_sel() {
   if (!al) return py::none();
 
   for (auto &elem : al->m_atom_idx_sel)
-    if (elem.m_idx == index::D(al->m_geom->DIM).all(0)) res.append(elem.m_atm);
+    if (elem.m_idx == index::D(al->m_geom->DIM()).all(0)) res.append(elem.m_atm);
 
   return res;
 
@@ -504,7 +504,7 @@ std::tuple<std::string, vector3<float> > simple_query::get_point_sym_group(float
   if (!cur_ws) return ret_empty();
   if (!al) return ret_empty();
 
-  if (al && al->m_geom->DIM == 0) {
+  if (al && al->m_geom->DIM() == 0) {
       array_group<matrix3<float> > G;
       vector3<float> new_center;
       find_point_symm(G, *(al->m_geom), new_center, tolerance);
@@ -611,7 +611,7 @@ void simple_query::make_psg_view(float tolerance) {
 
   if (al && al->m_parent_ws && cur_ws) {
 
-      if (cur_ws->m_edit_type == ws_edit_e::edit_item && al->m_geom->DIM == 0) {
+      if (cur_ws->m_edit_type == ws_edit_e::edit_item && al->m_geom->DIM() == 0) {
           auto ws_pg = astate->ws_mgr->m_bhv_mgr->fbr_ws_item_by_type(
                          psg_view_t::get_type_static());
           auto ws_pg_c = ws_pg->cast_as<psg_view_t>();
@@ -749,7 +749,7 @@ void simple_query::set_charge(float charge) {
   auto [cur_ws, cur_it, al] = astate->ws_mgr->get_sel_tpl_itm<geom_view_t>(error_ctx_throw);
 
   if (al && cur_ws->m_edit_type == ws_edit_e::edit_content) {
-      index zero = index::D(al->m_geom->DIM).all(0);
+      index zero = index::D(al->m_geom->DIM()).all(0);
       for (auto &elem : al->m_atom_idx_sel)
         if (elem.m_idx == zero)
           al->m_geom->xfield<float>(xgeom_charge, elem.m_atm) = charge;
@@ -833,7 +833,7 @@ void simple_query::convert_selected_units(spatial_units_e new_unit) {
   al->m_ext_obs->first_data = true;
 
   //transform cell
-  for (int i = 0; i < al->m_geom->DIM; i++) al->m_geom->cell.v[i] *= mod;
+  for (int i = 0; i < al->m_geom->DIM(); i++) al->m_geom->cell.v[i] *= mod;
 
   //transform content
   for (int i = 0; i < al->m_geom->nat(); i++) al->m_geom->coord(i) *= mod;

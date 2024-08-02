@@ -25,7 +25,7 @@ void supercell_tool_t::exec(ws_item_t *item, uint32_t _error_ctx) {
       return;
     }
 
-  if (al->m_geom->DIM != 3) {
+  if (al->m_geom->DIM() != 3) {
       QMessageBox::warning(nullptr, QObject::tr("Supercell generation"),
                            QObject::tr("al->m_geom->DIM != 3"));
       return;
@@ -55,7 +55,7 @@ void supercell_tool_t::make_super_cell(geom_view_t *al,
                                        const int b_steps,
                                        const int c_steps) {
 
-  if (al->m_geom->DIM != 3) {
+  if (al->m_geom->DIM() != 3) {
       QMessageBox::warning(nullptr, QObject::tr("Supercell generation"),
                            QObject::tr("al->m_geom->DIM != 3"));
       return;
@@ -68,7 +68,7 @@ void supercell_tool_t::make_super_cell(geom_view_t *al,
     }
 
   std::shared_ptr<geom_view_t> sc_al = std::make_shared<geom_view_t>();
-  sc_al->m_geom->DIM = 3;
+  //sc_al->m_geom->DIM = 3;
   sc_al->m_geom->cell.DIM = 3;
 
   //sc_al->set_parent_workspace(parent_ws);
@@ -101,7 +101,7 @@ void supercell_tool_t::make_super_cell(geom_view_t *al,
       sc_al->m_tws_tr->do_action(act_lock);
       xgeometry<float, periodic_cell<float> > g(3); //intermediate xgeom
       g.set_format({"charge"},{type_real});
-      g.DIM = 3;
+      //g.DIM = 3;
       g.cell.DIM = 3;
       g.cell.v[0] = sc_al->m_geom->cell.v[0];
       g.cell.v[1] = sc_al->m_geom->cell.v[1];
@@ -117,7 +117,7 @@ void supercell_tool_t::make_super_cell(geom_view_t *al,
 
           bool need_to_add{true};
           for (auto &elem : res)
-            if (elem.m_idx == index::D(sc_al->m_geom->DIM).all(0)) {
+            if (elem.m_idx == index::D(sc_al->m_geom->DIM()).all(0)) {
                 accum_chg += sc_al->m_geom->xfield<float>(xgeom_charge, elem.m_atm);
                 if (i > elem.m_atm) need_to_add = false;
               }

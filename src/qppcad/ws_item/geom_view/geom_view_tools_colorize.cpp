@@ -36,16 +36,16 @@ void geom_view_colorizer_helper::colorize_by_distance(geom_view_t *al,
     }
 
   //intermediate geometry
-  xgeometry<float, periodic_cell<float> > g(al->m_geom->DIM);
+  xgeometry<float, periodic_cell<float> > g(al->m_geom->DIM());
 
-  g.DIM = al->m_geom->DIM;
+  //g.DIM = al->m_geom->DIM;
   g.cell.DIM = al->m_geom->cell.DIM;
 
   //initialize tws_tree
   tws_tree_t<float, periodic_cell<float> > g_t(g);
   g_t.do_action(act_lock | act_lock_img);
 
-  index zero = index::D(al->m_geom->DIM).all(0);
+  index zero = index::D(al->m_geom->DIM()).all(0);
 
   //copy initial geometry
   al->copy_to_xgeom(g);

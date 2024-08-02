@@ -27,7 +27,7 @@ void copy_geom_view_aux_tool_t::exec(ws_item_t *item, uint32_t _error_ctx) {
     if (!master_as_gv || !slave_as_gv) return false;
 
     return master_as_gv != slave_as_gv &&
-           master_as_gv->m_geom->DIM == slave_as_gv->m_geom->DIM &&
+           master_as_gv->m_geom->DIM() == slave_as_gv->m_geom->DIM() &&
            master_as_gv->m_geom->nat() == slave_as_gv->m_geom->nat();
 
   });

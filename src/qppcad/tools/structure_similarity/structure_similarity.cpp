@@ -156,10 +156,10 @@ void structure_similarity_widget_t::compute_structure_similarity_naive(geom_view
                                                                        geom_view_t *g2) {
 
   //Checking dimensions
-  if (g1->m_geom->DIM != g2->m_geom->DIM) {
+  if (g1->m_geom->DIM() != g2->m_geom->DIM()) {
       str_sim_output->insertPlainText(tr("Dim1(%1) != Dim2(%2). Aborting\n")
-                                      .arg(g1->m_geom->DIM)
-                                      .arg(g2->m_geom->DIM));
+                                      .arg(g1->m_geom->DIM())
+                                      .arg(g2->m_geom->DIM()));
       return;
     }
 

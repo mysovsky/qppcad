@@ -16,7 +16,7 @@ namespace qpp {
 
       //(GL_CULL_FACE);
 
-      auto zero_idx = index::D(al.m_geom->DIM).all(0);
+      auto zero_idx = index::D(al.m_geom->DIM()).all(0);
 
       vector3<float> color(0.0, 0.0, 1.0);
       float dr_rad = 0.4f;
@@ -25,7 +25,7 @@ namespace qpp {
       matrix4<float> mat_model_view;
 
       astate->sp_default->set_u(sp_u_name::f_specular_intensity, &al.m_shading_specular_power);
-      index null_idx = index::D(al.m_geom->DIM).all(0);
+      index null_idx = index::D(al.m_geom->DIM()).all(0);
 
       float draw_specular = al.m_draw_specular;
       astate->sp_default->set_u(sp_u_name::f_specular_alpha, &draw_specular);

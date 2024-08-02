@@ -374,7 +374,7 @@ void add_new_ws_item_widget_t::ok_button_clicked() {
           auto nt_gv = nt->cast_as<geom_view_t>();
           if (!nt_gv) return;
           nt_gv->m_tws_tr->do_action(act_lock | act_clear_all);
-          nt_gv->m_geom->DIM = 3;
+          //nt_gv->m_geom->DIM = 3;
           nt_gv->m_geom->cell.DIM = 3;
 
           switch (ccm) {

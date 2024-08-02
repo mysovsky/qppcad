@@ -86,7 +86,7 @@ geom_view_t::geom_view_t(): ws_item_t() {
    }
         );
 
-  m_geom->DIM = 0;
+  //m_geom->DIM = 0;
   m_geom->cell.DIM = 0;
   m_geom->auto_update_types = true;
 
@@ -160,7 +160,7 @@ void geom_view_t::target_view(cam_tv_e target_view_src,
   auto new_target_view = target_view_src;
 
   if (new_target_view == cam_tv_e::tv_auto) {
-      if (m_geom->DIM != 0) new_target_view = cam_tv_e::tv_a;
+    if (m_geom->DIM() != 0) new_target_view = cam_tv_e::tv_a;
       else if (m_ext_obs->aabb.center().isApprox(vector3<float>{0}, 0.001f))
         new_target_view = cam_tv_e::tv_x;
       else
@@ -253,7 +253,7 @@ void geom_view_t::render() {
 
   app_state_t* astate = app_state_t::get_inst();
   vector3<float> _pos = m_pos;
-  index all_null = index::D(m_geom->DIM).all(0);
+  index all_null = index::D(m_geom->DIM()).all(0);
 
   if (astate->dp) {
 
@@ -274,7 +274,7 @@ void geom_view_t::render() {
 
       if (!m_is_visible) return;
 
-      if (m_geom->DIM == 3 && m_is_visible && m_draw_cell) {
+      if (m_geom->DIM() == 3 && m_is_visible && m_draw_cell) {
           astate->dp->begin_render_line();
 
           if (m_draw_subcells) {
@@ -309,11 +309,11 @@ void geom_view_t::render() {
           astate->dp->end_render_line();
         }
 
-      if (m_geom->DIM == 3 && m_draw_cell_vectors) {
+      if (m_geom->DIM() == 3 && m_draw_cell_vectors) {
 
           astate->dp->begin_render_general_mesh();
 
-          for (size_t i = 0; i < m_geom->DIM; i++) {
+          for (size_t i = 0; i < m_geom->DIM(); i++) {
 
               vector3<float> cell_v = m_geom->cell.v[i] * m_cell_vectors_ratio;
               astate->dp->render_arrow(m_pos + m_cell_vector_offset,
@@ -571,13 +571,13 @@ void geom_view_t::sel_atoms(bool all) {
 void geom_view_t::sel_atom(int atom_id) {
 
   if (!m_geom) return;
-  sel_atom(atom_id, index::D(m_geom->DIM).all(0));
+  sel_atom(atom_id, index::D(m_geom->DIM()).all(0));
 
 }
 
 void geom_view_t::toggle_atom_sel(int atom_id) {
 
-  auto it_0 = m_atom_idx_sel.find({atom_id, index::D(m_geom->DIM).all(0)});
+  auto it_0 = m_atom_idx_sel.find({atom_id, index::D(m_geom->DIM()).all(0)});
 
   if (it_0 != m_atom_idx_sel.end()) {
       unsel_atom(atom_id);
@@ -615,7 +615,7 @@ void geom_view_t::sel_atom(int atom_id, index atom_idx) {
                        m_geom->pos(atom_id)[0],
                        m_geom->pos(atom_id)[1],
                        m_geom->pos(atom_id)[2],
-                       atom_idx == index::D(m_geom->DIM).all(0) ? "" : "*");
+                       atom_idx == index::D(m_geom->DIM()).all(0) ? "" : "*");
         }
       astate->astate_evd->cur_ws_selected_atoms_list_selection_changed();
       return;
@@ -647,7 +647,7 @@ void geom_view_t::unsel_atom(int atom_id) {
 
   if (atom_id >= 0 && atom_id < m_geom->nat()) {
 
-      for (iterator idx(index::D(m_geom->DIM).all(-1), index::D(m_geom->DIM).all(1));
+    for (iterator idx(index::D(m_geom->DIM()).all(-1), index::D(m_geom->DIM()).all(1));
            !idx.end(); idx++ ) {
           auto key = atom_index_set_key(atom_id, idx);
 
@@ -748,7 +748,7 @@ void geom_view_t::inv_sel_atoms() {
   if (!m_geom) return;
 
   std::set<int> sel_atm;
-  index zero = index::D(m_geom->DIM).all(0);
+  index zero = index::D(m_geom->DIM()).all(0);
 
   for (auto &rec : m_atom_idx_sel)
     if (rec.m_idx == zero) sel_atm.insert(rec.m_atm);
@@ -897,7 +897,7 @@ void geom_view_t::sv_modify_selected(bool state) {
   app_state_t *astate = app_state_t::get_inst();
 
   for (auto &rec : m_atom_idx_sel)
-    if (rec.m_idx == index::D(m_geom->DIM).all(0))
+    if (rec.m_idx == index::D(m_geom->DIM()).all(0))
       m_geom->xfield<bool>(xgeom_hide, rec.m_atm) = state;
 
   if (!m_sel_vis) {
@@ -932,7 +932,7 @@ void geom_view_t::sv_hide_invert_selected() {
 
 void geom_view_t::xbool_invert_selected(size_t field_id) {
 
-  index zero = index::D(m_geom->DIM).all(0);
+  index zero = index::D(m_geom->DIM()).all(0);
   for (auto &elem : m_atom_idx_sel)
     if (elem.m_idx == zero)
       m_geom->xfield<bool>(field_id, elem.m_atm) = !m_geom->xfield<bool>(field_id, elem.m_atm);
@@ -959,11 +959,11 @@ void geom_view_t::copy_to_xgeom(xgeometry<float, periodic_cell<float> > &xgeom_i
 
   if (copy_cell) {
 
-      xgeom_inst.DIM = m_geom->DIM;
+    //xgeom_inst.DIM = m_geom->DIM;
       xgeom_inst.cell.DIM = m_geom->cell.DIM;
 
       for (int i = 0; i < 3; i++)
-        if (m_geom->DIM > i) xgeom_inst.cell.v[i] = m_geom->cell.v[i];
+        if (m_geom->DIM() > i) xgeom_inst.cell.v[i] = m_geom->cell.v[i];
 
     }
 
@@ -989,11 +989,11 @@ void geom_view_t::copy_cell(geom_view_t &src, bool rebuild_tws_tree) {
       m_ext_obs->first_data = true;
     }
 
-  m_geom->DIM = src.m_geom->DIM;
+  //m_geom->DIM = src.m_geom->DIM;
   m_geom->cell.DIM = src.m_geom->cell.DIM;
 
   for (int i = 0; i < 3; i++)
-    if (m_geom->DIM > i) m_geom->cell.v[i] = src.m_geom->cell.v[i];
+    if (m_geom->DIM() > i) m_geom->cell.v[i] = src.m_geom->cell.v[i];
 
   if (rebuild_tws_tree) {
       m_tws_tr->do_action(act_unlock | act_rebuild_tree);
@@ -1169,7 +1169,7 @@ void geom_view_t::sel_atom_ngbs(const int at_id) {
   if (!m_geom) return;
 
   for (int i = 0; i < m_tws_tr->n(at_id); i++)
-    if (m_tws_tr->table_idx(at_id, i) == index::D(m_geom->DIM).all(0))
+    if (m_tws_tr->table_idx(at_id, i) == index::D(m_geom->DIM()).all(0))
       sel_atom(m_tws_tr->table_atm(at_id, i));
 
 }
@@ -1180,7 +1180,7 @@ void geom_view_t::sel_selected_atoms_ngbs() {
 
   std::set<int> stored_sel;
   for (auto &rec : m_atom_idx_sel)
-    if (rec.m_idx == index::D(m_geom->DIM).all(0)) stored_sel.insert(rec.m_atm);
+    if (rec.m_idx == index::D(m_geom->DIM()).all(0)) stored_sel.insert(rec.m_atm);
 
   for (auto &rec : stored_sel) sel_atom_ngbs(rec);
 
@@ -1234,7 +1234,7 @@ void geom_view_t::update_inter_atomic_dist_ex(float new_dist,
   if (!m_geom) return;
 
   update_inter_atomic_dist(new_dist, at1, at2,
-                           index::D(m_geom->DIM).all(0), index::D(m_geom->DIM).all(0), mode);
+                           index::D(m_geom->DIM()).all(0), index::D(m_geom->DIM()).all(0), mode);
 
 }
 
@@ -1243,7 +1243,7 @@ void geom_view_t::translate_selected(const vector3<float> &t_vec) {
   if (!m_geom) return;
 
   for (auto &elem : m_atom_idx_sel)
-    if (elem.m_idx == index::D(m_geom->DIM).all(0))
+    if (elem.m_idx == index::D(m_geom->DIM()).all(0))
       upd_atom(elem.m_atm, m_geom->pos(elem.m_atm) + t_vec);
 
   app_state_t* astate = app_state_t::get_inst();
@@ -1350,7 +1350,7 @@ void geom_view_t::refine_from_frac_coord() {
 }
 
 std::string geom_view_t::compose_type_descr() {
-  return m_geom ? fmt::format("geom. view, D = [{}d]", m_geom->DIM) : "geom. view(empty)";
+  return m_geom ? fmt::format("geom. view, D = [{}d]", m_geom->DIM()) : "geom. view(empty)";
 }
 
 void geom_view_t::update (float delta_time) {
@@ -1372,12 +1372,12 @@ void geom_view_t::update (float delta_time) {
 }
 
 float geom_view_t::get_bb_prescaller() {
-  if (m_geom && m_geom->DIM == 3) return 1.5f;
+  if (m_geom && m_geom->DIM() == 3) return 1.5f;
   return 1.1f;
 }
 
 bool geom_view_t::is_bb_visible() {
-  return m_geom && m_geom->DIM == 0;
+  return m_geom && m_geom->DIM() == 0;
 }
 
 uint32_t geom_view_t::get_num_cnt_selected() {
@@ -1465,7 +1465,7 @@ void geom_view_t::save_to_json(json &data) {
 
   ws_item_t::save_to_json(data);
 
-  data[JSON_GEOM_VIEW_DIM] = m_geom->DIM;
+  data[JSON_GEOM_VIEW_DIM] = m_geom->DIM();
   data[JSON_GEOM_VIEW_SHOW_IMG_ATOMS] = m_draw_img_atoms;
   data[JSON_GEOM_VIEW_SHOW_IMG_BONDS] = m_draw_img_bonds;
   data[JSON_GEOM_VIEW_SHOW_BONDS] = m_draw_bonds;
@@ -1503,7 +1503,7 @@ void geom_view_t::save_to_json(json &data) {
   data[JSON_GEOM_VIEW_SEL_VIS] = m_sel_vis;
   data[JSON_GEOM_VIEW_SEL_VIS_AFFECT_BONDS] = m_sel_vis_affect_bonds;
 
-  if (m_geom->DIM == 3) {
+  if (m_geom->DIM() == 3) {
       data[JSON_GEOM_VIEW_PERIODIC_DRAW_SUBCELLS] = m_draw_subcells;
       data[JSON_GEOM_VIEW_PERIODIC_SUBCELLS_RANGE] =
           json::array({m_subcells_range[0], m_subcells_range[1], m_subcells_range[2]});
@@ -1518,9 +1518,9 @@ void geom_view_t::save_to_json(json &data) {
       data[JSON_GEOM_VIEW_BONDING_TABLE].push_back(bt_rec);
     }
 
-  if (m_geom->DIM > 0) {
+  if (m_geom->DIM() > 0) {
       json cell = json::array({});
-      for (uint8_t i = 0; i < m_geom->DIM; i++) {
+      for (uint8_t i = 0; i < m_geom->DIM(); i++) {
           json cell_data = json::array({});
           for (uint8_t q = 0; q < 3; q++) cell_data.push_back(m_geom->cell.v[i][q]);
           cell.push_back(cell_data);
@@ -1651,8 +1651,8 @@ void geom_view_t::load_from_json(json &data, repair_connection_info_t &rep_info)
   ws_item_t::load_from_json(data, rep_info);
 
   if (auto val_itr = data.find(JSON_GEOM_VIEW_DIM); val_itr != data.end()) {
-      m_geom->DIM = val_itr.value();
-      m_geom->cell.DIM = m_geom->DIM;
+      m_geom->cell.DIM = val_itr.value();
+      //m_geom->cell.DIM = m_geom->DIM;
     }
 
   json_helper::load_var(JSON_GEOM_VIEW_ATOM_SCALE, m_atom_scale_factor, data);
@@ -1725,18 +1725,18 @@ void geom_view_t::load_from_json(json &data, repair_connection_info_t &rep_info)
 
   m_ext_obs->first_data = true;
 
-  if (m_geom->DIM>0) {
+  if (m_geom->DIM()>0) {
 
       if (auto val_itr = data.find(JSON_GEOM_VIEW_CELL); val_itr != data.end()) {
 
-          for (uint8_t i = 0; i < m_geom->DIM; i++) {
+	for (uint8_t i = 0; i < m_geom->DIM(); i++) {
               vector3<float> cellv(val_itr.value()[i][0].get<float>(),
                                    val_itr.value()[i][1].get<float>(),
                                    val_itr.value()[i][2].get<float>());
               m_geom->cell.v[i] = cellv;
             }
         } else {
-          m_geom->DIM = 0;
+	m_geom->cell.DIM = 0;
           //("Cannot load cell data for geom with DIM>0");
         }
 

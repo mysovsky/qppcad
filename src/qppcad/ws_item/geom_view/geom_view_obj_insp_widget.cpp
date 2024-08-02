@@ -1251,7 +1251,7 @@ void geom_view_obj_insp_widget_t::update_from_ws_item() {
       periodic_subcells_clr->bind_value(&b_al->m_subcell_color);
 
       // 3d geom section
-      bool _al3d = b_al->m_geom->DIM == 3;
+      bool _al3d = b_al->m_geom->DIM() == 3;
       gb_periodic_related_render->setVisible(_al3d && tdisp_switch->button(0)->isChecked());
       // end 3d geom section
 
@@ -1563,12 +1563,12 @@ void geom_view_obj_insp_widget_t::update_modify_tab() {
       if (b_al->m_parent_ws &&
           b_al->m_parent_ws->m_edit_type == ws_edit_e::edit_content) {
 
-          tm_group_op_flip_a_p->setEnabled(b_al->m_geom->DIM > 0);
-          tm_group_op_flip_b_p->setEnabled(b_al->m_geom->DIM > 1);
-          tm_group_op_flip_c_p->setEnabled(b_al->m_geom->DIM > 2);
-          tm_group_op_flip_a_n->setEnabled(b_al->m_geom->DIM > 0);
-          tm_group_op_flip_b_n->setEnabled(b_al->m_geom->DIM > 1);
-          tm_group_op_flip_c_n->setEnabled(b_al->m_geom->DIM > 2);
+	tm_group_op_flip_a_p->setEnabled(b_al->m_geom->DIM() > 0);
+	tm_group_op_flip_b_p->setEnabled(b_al->m_geom->DIM() > 1);
+	tm_group_op_flip_c_p->setEnabled(b_al->m_geom->DIM() > 2);
+	tm_group_op_flip_a_n->setEnabled(b_al->m_geom->DIM() > 0);
+	tm_group_op_flip_b_n->setEnabled(b_al->m_geom->DIM() > 1);
+	tm_group_op_flip_c_n->setEnabled(b_al->m_geom->DIM() > 2);
 
           set_tab_enabled(tab_modify, true);
 
@@ -1648,8 +1648,8 @@ void geom_view_obj_insp_widget_t::update_modify_tab() {
                                                            it2->m_atm,
                                                            it1->m_idx)));
 
-                  if (it1->m_idx == index::D(b_al->m_geom->DIM).all(0) &&
-                      it2->m_idx == index::D(b_al->m_geom->DIM).all(0)) {
+                  if (it1->m_idx == index::D(b_al->m_geom->DIM()).all(0) &&
+                      it2->m_idx == index::D(b_al->m_geom->DIM()).all(0)) {
                       tm_pair_dist_spinbox->show();
                       float dist_btw = (b_al->m_geom->pos(it1->m_atm, it1->m_idx) -
                                         b_al->m_geom->pos(it2->m_atm, it2->m_idx)).norm();
@@ -1687,7 +1687,7 @@ void geom_view_obj_insp_widget_t::update_modify_tab() {
 
           if (b_al->m_atom_idx_sel.size() > 0) {
 
-              if (b_al->m_geom->DIM == 3) {
+	    if (b_al->m_geom->DIM() == 3) {
                   //tm_translate_coord_type_label->show();
                   tm_translate_coord_type->show();
                 } else {
@@ -1752,7 +1752,7 @@ void geom_view_obj_insp_widget_t::update_measurement_tab() {
       tms_pair_cur_msr->blockSignals(true);
       tms_pair_cur_msr->clear();
       tms_pair_cur_msr->addItem(tr("None"));
-      index zero = index::D(b_al->m_geom->DIM).all(0);
+      index zero = index::D(b_al->m_geom->DIM()).all(0);
       for (size_t i = 0; i < b_al->m_measure->m_dist_recs.size(); i++) {
           //compose dist msr name
           int at1 = b_al->m_measure->m_dist_recs[i].m_at1;
@@ -2184,7 +2184,7 @@ void geom_view_obj_insp_widget_t::anim_act_del_clicked() {
 void geom_view_obj_insp_widget_t::disp_switch_current_changed(int index) {
 
   gb_disp_s->setVisible(index == 0);
-  gb_periodic_related_render->setVisible(index == 0 && b_al && b_al->m_geom->DIM > 0);
+  gb_periodic_related_render->setVisible(index == 0 && b_al && b_al->m_geom->DIM() > 0);
   gb_disp_shading->setVisible(index == 0);
 
   gb_disp_labels->setVisible(index == 1);
@@ -2197,16 +2197,16 @@ void geom_view_obj_insp_widget_t::cell_changed() {
 
   if (b_al) {
 
-      if (b_al->m_geom->DIM > 0) {
+    if (b_al->m_geom->DIM() > 0) {
 
-          tg_gb_cell_tbl->setRowCount(b_al->m_geom->DIM);
+      tg_gb_cell_tbl->setRowCount(b_al->m_geom->DIM());
           QStringList table_hdr_cell_v;
           table_hdr_cell_v.push_back("a");
           table_hdr_cell_v.push_back("b");
           table_hdr_cell_v.push_back("c");
           tg_gb_cell_tbl->setVerticalHeaderLabels(table_hdr_cell_v);
 
-          for (int c = 0; c < b_al->m_geom->DIM; c++)
+          for (int c = 0; c < b_al->m_geom->DIM(); c++)
             for (int i = 0; i < 3; i++) {
 
                 float cell_amp = b_al->m_geom->cell.v[c][i];
@@ -2319,8 +2319,8 @@ void geom_view_obj_insp_widget_t::modify_pair_dist_spinbox_value_changed(double 
       auto it1 = b_al->m_atom_ord_sel.begin();
       auto it2 = it1++;
 
-      if (it1->m_idx == index::D(b_al->m_geom->DIM).all(0) &&
-          it2->m_idx == index::D(b_al->m_geom->DIM).all(0)) {
+      if (it1->m_idx == index::D(b_al->m_geom->DIM()).all(0) &&
+          it2->m_idx == index::D(b_al->m_geom->DIM()).all(0)) {
 
           pair_dist_mode_e mode;
           mode = static_cast<pair_dist_mode_e>(tm_pair_dist_t_mode->currentIndex());
@@ -2340,8 +2340,8 @@ void geom_view_obj_insp_widget_t::modify_pair_dist_swap_button_clicked() {
       auto it1 = b_al->m_atom_idx_sel.begin();
       auto it2 = it1++;
 
-      if (it1->m_idx == index::D(b_al->m_geom->DIM).all(0) &&
-          it2->m_idx == index::D(b_al->m_geom->DIM).all(0))
+      if (it1->m_idx == index::D(b_al->m_geom->DIM()).all(0) &&
+          it2->m_idx == index::D(b_al->m_geom->DIM()).all(0))
         b_al->swap_atoms(it1->m_atm, it2->m_atm);
 
     }
@@ -2411,7 +2411,7 @@ void geom_view_obj_insp_widget_t::modify_translate_selected_atoms_clicked() {
                             float(tm_translate_vec3->sb_y->value()),
                             float(tm_translate_vec3->sb_z->value()));
 
-      if (tm_translate_coord_type->currentIndex() == 1 && b_al->m_geom->DIM == 3) {
+      if (tm_translate_coord_type->currentIndex() == 1 && b_al->m_geom->DIM() == 3) {
           vector3<float> tr_vec_c = tr_vec;
           tr_vec = b_al->m_geom->cell.frac2cart(tr_vec_c);
         }

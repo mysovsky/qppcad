@@ -75,10 +75,10 @@ namespace qpp {
         bool check_before_save_ex(geom_view_t *_item, std::string &message) {
 
           if (CHECK_DIM) {
-              bool check = _item->m_geom->DIM == REQUIRED_DIM;
+	    bool check = _item->m_geom->DIM() == REQUIRED_DIM;
               if (!check)
                 message = fmt::format("Invalid dimension -> REQUIRED = {}, FOUND = {}",
-                                      REQUIRED_DIM, _item->m_geom->DIM);
+                                      REQUIRED_DIM, _item->m_geom->DIM());
               return check;
             } else {
               return true;
@@ -113,7 +113,7 @@ namespace qpp {
                                  workspace_t *ws) override {
 
           if (FORCED_DIM != -1) {
-              _item->m_geom->DIM = FORCED_DIM;
+	    //_item->m_geom->DIM = FORCED_DIM;
               _item->m_geom->cell.DIM = FORCED_DIM;
             }
 
@@ -143,7 +143,7 @@ namespace qpp {
                                  workspace_t *ws) override {
 
           if (FORCED_DIM != -1) {
-              _item->m_geom->DIM = FORCED_DIM;
+	    //_item->m_geom->DIM = FORCED_DIM;
               _item->m_geom->cell.DIM = FORCED_DIM;
             }
 
@@ -182,7 +182,7 @@ namespace qpp {
           CCD_FUNC(stream, cc_inst);
 
           if (FORCED_DIM != -1) {
-              _item->m_geom->DIM = FORCED_DIM;
+	    //_item->m_geom->DIM = FORCED_DIM;
               _item->m_geom->cell.DIM = FORCED_DIM;
             }
 
@@ -193,7 +193,7 @@ namespace qpp {
             }
 
           if (COPY_DIM_FROM_CCD) {
-              _item->m_geom->DIM = cc_inst.m_DIM;
+	    //_item->m_geom->DIM = cc_inst.m_DIM;
               _item->m_geom->cell.DIM = cc_inst.m_DIM;
             }
 

@@ -7,7 +7,7 @@ namespace qpp {
     void geom_view_render_dlines::render (geom_view_t &al) {
 
       app_state_t* astate = app_state_t::get_inst();
-      index all_null = index::D(al.m_geom->DIM).all(0);
+      index all_null = index::D(al.m_geom->DIM()).all(0);
 
       astate->dp->begin_render_line();
       if (al.m_draw_bonds)

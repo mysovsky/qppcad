@@ -13,7 +13,7 @@ void geom_view_io_cube_t::load_from_stream_ex(std::basic_istream<char, TRAITS> &
 
   std::shared_ptr<volume_view_t> vold = std::make_shared<volume_view_t>();
 
-  _item->m_geom->DIM = 0;
+  //_item->m_geom->DIM = 0;
   _item->m_geom->cell.DIM = 0;
 
   ws_volume_record_t new_vol_rec;
@@ -55,7 +55,7 @@ void geom_view_molcas_grid_t::load_from_stream_ex(std::basic_istream<char, TRAIT
                                                   workspace_t *ws) {
 
   std::shared_ptr<volume_view_t> vold = std::make_shared<volume_view_t>();
-  _item->m_geom->DIM = 0;
+  //_item->m_geom->DIM = 0;
   _item->m_geom->cell.DIM = 0;
 
   std::vector<scalar_volume_t<float> > tmp_volumes;
@@ -98,7 +98,7 @@ void geom_view_vasp_chgcar_t::load_from_stream_ex(std::basic_istream<char, TRAIT
                                                   workspace_t *ws) {
 
   std::shared_ptr<volume_view_t> vold = std::make_shared<volume_view_t>();
-  _item->m_geom->DIM = 3;
+  //_item->m_geom->DIM = 3;
   _item->m_geom->cell.DIM = 3;
 
   std::vector<scalar_volume_t<float> > tmp_volumes;
